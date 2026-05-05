@@ -1,4 +1,5 @@
 @org.springframework.modulith.ApplicationModule(
-    displayName = "Shared Kernel"
+    displayName = "Shared Kernel",
+    type = org.springframework.modulith.ApplicationModule.Type.OPEN
 )
 package com.cardapio.shared;
