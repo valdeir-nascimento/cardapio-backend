@@ -31,8 +31,8 @@ public class DevAdminSeeder {
         this.hasher = hasher;
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void seed() {
+    @EventListener
+    public void seed(ApplicationReadyEvent event) {
         if (admins.findByEmail(DEFAULT_EMAIL).isPresent()) return;
         Admin admin = Admin.create("Admin Dev", DEFAULT_EMAIL,
             hasher.hash(RawPassword.of(DEFAULT_PASSWORD)), Set.of(Role.OWNER));
