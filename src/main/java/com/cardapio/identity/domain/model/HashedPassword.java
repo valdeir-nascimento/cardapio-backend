@@ -9,5 +9,6 @@ public record HashedPassword(String value) {
             throw new IllegalArgumentException("hashed password must not be blank");
         }
     }
+    public static HashedPassword of(String value) { return new HashedPassword(value); }
     @Override public String toString() { return "HashedPassword[***]"; }
 }
