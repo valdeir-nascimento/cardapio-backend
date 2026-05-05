@@ -10,15 +10,10 @@ Backend Java + Spring Boot do cardápio digital.
 
 ## Rodando
 
-```bash
-docker compose up -d            # sobe Postgres
-./mvnw spring-boot:run          # inicia o app na porta 8080
-```
-
-Healthcheck: http://localhost:8080/actuator/health
-
-## Testes
+> **Nota:** instruções completas (incluindo `docker-compose.yml` para PostgreSQL local) serão adicionadas conforme as próximas tasks da Fase 1.A. Por enquanto o esqueleto apenas compila e expõe `/actuator/health` sem persistência.
 
 ```bash
-./mvnw test                      # roda testes (Testcontainers sobe Postgres efêmero)
+./mvnw -DskipTests package      # build do esqueleto
 ```
+
+Healthcheck (após `./mvnw spring-boot:run`): http://localhost:8080/actuator/health
