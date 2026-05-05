@@ -17,3 +17,10 @@ logging:
   level:
     org.springframework.modulith: INFO
     org.flywaydb: INFO
+
+cardapio:
+  security:
+    jwt:
+      secret: dev-secret-change-me-must-be-long-enough-32bytes!!
+      access-token-ttl: 15m
+      refresh-token-ttl: 30d

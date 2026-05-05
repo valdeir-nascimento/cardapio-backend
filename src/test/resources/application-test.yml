@@ -11,3 +11,10 @@ logging:
   level:
     org.testcontainers: WARN
     com.github.dockerjava: WARN
+
+cardapio:
+  security:
+    jwt:
+      secret: test-secret-must-be-long-enough-for-hs256-32bytes!!
+      access-token-ttl: 15m
+      refresh-token-ttl: 30d
