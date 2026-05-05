@@ -1,6 +1,8 @@
 package com.cardapio.catalog.infrastructure.persistence.jpa;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ public class AddOnGroupJpaEntity {
 
     @OneToMany(mappedBy = "groupId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("position ASC")
+    @Fetch(FetchMode.SUBSELECT)
     private List<AddOnItemJpaEntity> items = new ArrayList<>();
 
     protected AddOnGroupJpaEntity() {}

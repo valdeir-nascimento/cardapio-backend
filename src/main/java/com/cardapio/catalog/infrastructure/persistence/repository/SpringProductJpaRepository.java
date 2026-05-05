@@ -13,15 +13,11 @@ public interface SpringProductJpaRepository extends JpaRepository<ProductJpaEnti
 
     @Query("SELECT DISTINCT p FROM ProductJpaEntity p " +
         "LEFT JOIN FETCH p.variations " +
-        "LEFT JOIN FETCH p.addOnGroups ag " +
-        "LEFT JOIN FETCH ag.items " +
         "WHERE p.id = :id")
     Optional<ProductJpaEntity> findByIdWithDetails(@Param("id") UUID id);
 
     @Query("SELECT DISTINCT p FROM ProductJpaEntity p " +
         "LEFT JOIN FETCH p.variations " +
-        "LEFT JOIN FETCH p.addOnGroups ag " +
-        "LEFT JOIN FETCH ag.items " +
         "WHERE p.categoryId = :categoryId AND p.available = true " +
         "ORDER BY p.name")
     List<ProductJpaEntity> findAvailableByCategoryWithDetails(@Param("categoryId") UUID categoryId);

@@ -1,6 +1,8 @@
 package com.cardapio.catalog.infrastructure.persistence.jpa;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -31,6 +33,7 @@ public class ProductJpaEntity {
 
     @OneToMany(mappedBy = "productId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("position ASC")
+    @Fetch(FetchMode.SUBSELECT)
     private List<AddOnGroupJpaEntity> addOnGroups = new ArrayList<>();
 
     protected ProductJpaEntity() {}

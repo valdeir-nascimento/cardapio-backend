@@ -49,7 +49,7 @@ public abstract class AbstractLoginUseCase<U> {
 
     protected abstract Set<Role> rolesOf(U user);
 
-    public final Result<TokenPair> execute(LoginCommand cmd) {
+    public Result<TokenPair> execute(LoginCommand cmd) {
         Email email;
         try {
             email = Email.of(cmd.email());
