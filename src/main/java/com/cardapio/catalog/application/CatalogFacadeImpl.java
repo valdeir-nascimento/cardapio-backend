@@ -28,6 +28,7 @@ import com.cardapio.catalog.application.usecase.UpdateOperatingHoursUseCase;
 import com.cardapio.catalog.application.usecase.UpdateProductUseCase;
 import com.cardapio.catalog.domain.model.CategoryId;
 import com.cardapio.catalog.domain.model.ProductId;
+import com.cardapio.shared.domain.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -53,27 +54,27 @@ public class CatalogFacadeImpl implements CatalogFacade {
 
     @Override
     public ProductId createProduct(CreateProductCommand cmd) {
-        return createProduct.execute(cmd).orElseThrow(NotificationException::new);
+        return createProduct.execute(cmd).orElseThrow(CatalogFacadeImpl::toException);
     }
 
     @Override
     public ProductId updateProduct(UpdateProductCommand cmd) {
-        return updateProduct.execute(cmd).orElseThrow(NotificationException::new);
+        return updateProduct.execute(cmd).orElseThrow(CatalogFacadeImpl::toException);
     }
 
     @Override
     public void deleteProduct(ProductId id) {
-        deleteProduct.execute(id).orElseThrow(NotificationException::new);
+        deleteProduct.execute(id).orElseThrow(CatalogFacadeImpl::toException);
     }
 
     @Override
     public void setProductAvailability(SetProductAvailabilityCommand cmd) {
-        setAvailability.execute(cmd).orElseThrow(NotificationException::new);
+        setAvailability.execute(cmd).orElseThrow(CatalogFacadeImpl::toException);
     }
 
     @Override
     public void setProductStock(SetProductStockCommand cmd) {
-        setStock.execute(cmd).orElseThrow(NotificationException::new);
+        setStock.execute(cmd).orElseThrow(CatalogFacadeImpl::toException);
     }
 
     @Override
@@ -83,17 +84,17 @@ public class CatalogFacadeImpl implements CatalogFacade {
 
     @Override
     public CategoryId createCategory(CreateCategoryCommand cmd) {
-        return createCategory.execute(cmd).orElseThrow(NotificationException::new);
+        return createCategory.execute(cmd).orElseThrow(CatalogFacadeImpl::toException);
     }
 
     @Override
     public CategoryId updateCategory(UpdateCategoryCommand cmd) {
-        return updateCategory.execute(cmd).orElseThrow(NotificationException::new);
+        return updateCategory.execute(cmd).orElseThrow(CatalogFacadeImpl::toException);
     }
 
     @Override
     public void deleteCategory(CategoryId id) {
-        deleteCategory.execute(id).orElseThrow(NotificationException::new);
+        deleteCategory.execute(id).orElseThrow(CatalogFacadeImpl::toException);
     }
 
     @Override
@@ -113,6 +114,12 @@ public class CatalogFacadeImpl implements CatalogFacade {
 
     @Override
     public void updateOperatingHours(UpdateOperatingHoursCommand cmd) {
-        updateOperatingHours.execute(cmd).orElseThrow(NotificationException::new);
+        updateOperatingHours.execute(cmd).orElseThrow(CatalogFacadeImpl::toException);
+    }
+
+    private static RuntimeException toException(Notification n) {
+        boolean notFound = n.errors().stream()
+            .anyMatch(e -> e.code() != null && e.code().endsWith("_NOT_FOUND"));
+        return notFound ? new NotFoundException(n) : new NotificationException(n);
     }
 }

@@ -11,6 +11,7 @@ import com.cardapio.identity.application.dto.CustomerProfile;
 import com.cardapio.identity.application.usecase.*;
 import com.cardapio.identity.domain.model.CustomerId;
 import com.cardapio.identity.domain.model.TokenPair;
+import com.cardapio.shared.domain.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +53,12 @@ public class IdentityFacadeImpl implements IdentityFacade {
 
     @Override
     public CustomerProfile updateMyProfile(UpdateProfileCommand cmd) {
-        return updateMy.execute(cmd).orElseThrow(NotificationException::new);
+        return updateMy.execute(cmd).orElseThrow(IdentityFacadeImpl::toException);
+    }
+
+    private static RuntimeException toException(Notification n) {
+        boolean notFound = n.errors().stream()
+            .anyMatch(e -> e.code() != null && e.code().endsWith("_NOT_FOUND"));
+        return notFound ? new NotFoundException(n) : new NotificationException(n);
     }
 }
