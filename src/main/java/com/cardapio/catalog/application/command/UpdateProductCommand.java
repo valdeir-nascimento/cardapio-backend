@@ -1,0 +1,20 @@
+// UpdateProductCommand.java
+package com.cardapio.catalog.application.command;
+
+import com.cardapio.catalog.domain.model.CategoryId;
+import com.cardapio.catalog.domain.model.ProductId;
+import com.cardapio.shared.domain.Money;
+
+import java.util.List;
+
+public record UpdateProductCommand(
+    ProductId id,
+    String name,
+    String description,
+    Money basePrice,
+    CategoryId categoryId,
+    String imageUrl,
+    boolean allowsHalfHalf,
+    List<CreateProductCommand.VariationDraft> variations,
+    List<CreateProductCommand.AddOnGroupDraft> addOnGroups
+) {}
