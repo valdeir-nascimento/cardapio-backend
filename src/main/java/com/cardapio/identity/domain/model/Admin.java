@@ -38,4 +38,9 @@ public final class Admin extends AggregateRoot<AdminId> {
     public String name() { return name; }
     public Email email() { return email; }
     public HashedPassword passwordHash() { return passwordHash; }
+
+    @Override
+    public String toString() {
+        return "Admin{id=" + id() + ", name='" + name + "', email=" + email.value() + ", roles=" + roles + "}";
+    }
 }

@@ -6,6 +6,8 @@ import com.cardapio.identity.domain.port.AdminRepository;
 import com.cardapio.identity.domain.port.JwtIssuer;
 import com.cardapio.identity.domain.port.PasswordHasher;
 import com.cardapio.identity.domain.port.RefreshTokenRepository;
+import com.cardapio.identity.domain.port.TokenHasher;
+import com.cardapio.identity.infrastructure.security.Sha256TokenHasher;
 import com.cardapio.shared.domain.Email;
 import com.cardapio.shared.domain.Result;
 import org.junit.jupiter.api.Test;
@@ -28,8 +30,9 @@ class LoginAdminUseCaseTest {
     private final RefreshTokenRepository refreshTokens = mock(RefreshTokenRepository.class);
     private final PasswordHasher hasher = mock(PasswordHasher.class);
     private final JwtIssuer issuer = mock(JwtIssuer.class);
+    private final TokenHasher tokenHasher = new Sha256TokenHasher();
     private final Clock clock = Clock.fixed(Instant.parse("2026-05-04T10:00:00Z"), ZoneId.of("UTC"));
-    private final LoginAdminUseCase useCase = new LoginAdminUseCase(admins, refreshTokens, hasher, issuer, clock);
+    private final LoginAdminUseCase useCase = new LoginAdminUseCase(admins, hasher, issuer, refreshTokens, tokenHasher, clock);
 
     @Test
     void issuesTokenWithAdminAudienceAndRoles() {

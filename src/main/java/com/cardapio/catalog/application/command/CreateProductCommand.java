@@ -1,4 +1,3 @@
-// CreateProductCommand.java
 package com.cardapio.catalog.application.command;
 
 import com.cardapio.catalog.domain.model.CategoryId;
@@ -13,10 +12,11 @@ public record CreateProductCommand(
     CategoryId categoryId,
     String imageUrl,
     boolean allowsHalfHalf,
-    List<VariationDraft> variations,
-    List<AddOnGroupDraft> addOnGroups
+    List<ProductDrafts.VariationDraft> variations,
+    List<ProductDrafts.AddOnGroupDraft> addOnGroups
 ) {
-    public record VariationDraft(String name, Money priceModifier) {}
-    public record AddOnGroupDraft(String name, int minSelection, int maxSelection, List<AddOnItemDraft> items) {}
-    public record AddOnItemDraft(String name, Money price) {}
+    public CreateProductCommand {
+        variations = variations != null ? List.copyOf(variations) : List.of();
+        addOnGroups = addOnGroups != null ? List.copyOf(addOnGroups) : List.of();
+    }
 }

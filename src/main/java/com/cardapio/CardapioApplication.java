@@ -8,9 +8,9 @@ import org.springframework.modulith.Modulithic;
 
 import java.time.Clock;
 
-@Modulithic(systemName = "Cardapio Digital")
 @SpringBootApplication
 @ConfigurationPropertiesScan
+@Modulithic(systemName = "Cardapio Digital")
 public class CardapioApplication {
 
     public static void main(String[] args) {

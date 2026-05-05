@@ -1,14 +1,28 @@
 package com.cardapio.catalog.infrastructure.persistence.mapper;
 
-import com.cardapio.catalog.domain.model.*;
-import com.cardapio.catalog.infrastructure.persistence.jpa.*;
+import com.cardapio.catalog.domain.model.AddOnGroup;
+import com.cardapio.catalog.domain.model.AddOnGroupId;
+import com.cardapio.catalog.domain.model.AddOnItem;
+import com.cardapio.catalog.domain.model.AddOnItemId;
+import com.cardapio.catalog.domain.model.CategoryId;
+import com.cardapio.catalog.domain.model.Product;
+import com.cardapio.catalog.domain.model.ProductId;
+import com.cardapio.catalog.domain.model.Stock;
+import com.cardapio.catalog.domain.model.Variation;
+import com.cardapio.catalog.domain.model.VariationId;
+import com.cardapio.catalog.infrastructure.persistence.jpa.AddOnGroupJpaEntity;
+import com.cardapio.catalog.infrastructure.persistence.jpa.AddOnItemJpaEntity;
+import com.cardapio.catalog.infrastructure.persistence.jpa.ProductJpaEntity;
+import com.cardapio.catalog.infrastructure.persistence.jpa.VariationJpaEntity;
 import com.cardapio.shared.domain.Money;
 
 import java.time.Instant;
 import java.util.Currency;
 import java.util.List;
+import java.util.UUID;
 
 public final class ProductMapper {
+
     private ProductMapper() {}
 
     public static ProductJpaEntity toJpa(Product p, Instant now) {
@@ -17,25 +31,8 @@ public final class ProductMapper {
             p.basePrice().amount(), p.basePrice().currency().getCurrencyCode(),
             p.imageUrl(), p.isAvailable(), p.allowsHalfHalf(),
             p.stock().rawQuantity(), now, now);
-
-        int pos = 0;
-        for (Variation v : p.variations()) {
-            entity.getVariations().add(new VariationJpaEntity(
-                v.id().value(), p.id().value(), v.name(),
-                v.priceModifier().amount(), v.priceModifier().currency().getCurrencyCode(), pos++));
-        }
-        pos = 0;
-        for (AddOnGroup g : p.addOnGroups()) {
-            AddOnGroupJpaEntity ge = new AddOnGroupJpaEntity(
-                g.id().value(), p.id().value(), g.name(), g.minSelection(), g.maxSelection(), pos++);
-            int ipos = 0;
-            for (AddOnItem item : g.items()) {
-                ge.getItems().add(new AddOnItemJpaEntity(
-                    item.id().value(), g.id().value(), item.name(),
-                    item.price().amount(), item.price().currency().getCurrencyCode(), ipos++));
-            }
-            entity.getAddOnGroups().add(ge);
-        }
+        populateVariations(entity, p);
+        populateAddOnGroups(entity, p);
         return entity;
     }
 
@@ -49,29 +46,8 @@ public final class ProductMapper {
         entity.setAllowsHalfHalf(p.allowsHalfHalf());
         entity.setStockQuantity(p.stock().rawQuantity());
         entity.setUpdatedAt(now);
-
-        // simple replacement strategy (orphanRemoval handles deletes)
-        entity.getVariations().clear();
-        int pos = 0;
-        for (Variation v : p.variations()) {
-            entity.getVariations().add(new VariationJpaEntity(
-                v.id().value(), p.id().value(), v.name(),
-                v.priceModifier().amount(), v.priceModifier().currency().getCurrencyCode(), pos++));
-        }
-
-        entity.getAddOnGroups().clear();
-        pos = 0;
-        for (AddOnGroup g : p.addOnGroups()) {
-            AddOnGroupJpaEntity ge = new AddOnGroupJpaEntity(
-                g.id().value(), p.id().value(), g.name(), g.minSelection(), g.maxSelection(), pos++);
-            int ipos = 0;
-            for (AddOnItem item : g.items()) {
-                ge.getItems().add(new AddOnItemJpaEntity(
-                    item.id().value(), g.id().value(), item.name(),
-                    item.price().amount(), item.price().currency().getCurrencyCode(), ipos++));
-            }
-            entity.getAddOnGroups().add(ge);
-        }
+        populateVariations(entity, p);
+        populateAddOnGroups(entity, p);
     }
 
     public static Product toDomain(ProductJpaEntity e) {
@@ -83,14 +59,12 @@ public final class ProductMapper {
             .toList();
 
         List<AddOnGroup> groups = e.getAddOnGroups().stream()
-            .map(ge -> {
-                List<AddOnItem> items = ge.getItems().stream()
+            .map(ge -> AddOnGroup.rehydrate(AddOnGroupId.of(ge.getId()), ge.getName(),
+                ge.getMinSelection(), ge.getMaxSelection(),
+                ge.getItems().stream()
                     .map(ie -> AddOnItem.rehydrate(AddOnItemId.of(ie.getId()), ie.getName(),
                         Money.of(ie.getPrice(), Currency.getInstance(ie.getCurrency()))))
-                    .toList();
-                return AddOnGroup.rehydrate(AddOnGroupId.of(ge.getId()), ge.getName(),
-                    ge.getMinSelection(), ge.getMaxSelection(), items);
-            })
+                    .toList()))
             .toList();
 
         Stock stock = e.getStockQuantity() == null ? Stock.untracked() : Stock.of(e.getStockQuantity());
@@ -100,5 +74,47 @@ public final class ProductMapper {
             Money.of(e.getBasePrice(), currency),
             CategoryId.of(e.getCategoryId()), e.getImageUrl(),
             e.isAvailable(), e.isAllowsHalfHalf(), stock, variations, groups);
+    }
+
+    private static void populateVariations(ProductJpaEntity entity, Product p) {
+        entity.getVariations().clear();
+        UUID productId = p.id().value();
+        int pos = 0;
+        for (Variation v : p.variations()) {
+            entity.getVariations().add(toVariationEntity(v, productId, pos++));
+        }
+    }
+
+    private static VariationJpaEntity toVariationEntity(Variation v, UUID productId, int pos) {
+        return new VariationJpaEntity(
+            v.id().value(), productId, v.name(),
+            v.priceModifier().amount(),
+            v.priceModifier().currency().getCurrencyCode(), pos);
+    }
+
+    private static void populateAddOnGroups(ProductJpaEntity entity, Product p) {
+        entity.getAddOnGroups().clear();
+        UUID productId = p.id().value();
+        int pos = 0;
+        for (AddOnGroup g : p.addOnGroups()) {
+            entity.getAddOnGroups().add(toAddOnGroupEntity(g, productId, pos++));
+        }
+    }
+
+    private static AddOnGroupJpaEntity toAddOnGroupEntity(AddOnGroup g, UUID productId, int pos) {
+        AddOnGroupJpaEntity ge = new AddOnGroupJpaEntity(
+            g.id().value(), productId, g.name(), g.minSelection(), g.maxSelection(), pos);
+        int ipos = 0;
+        for (AddOnItem item : g.items()) {
+            ge.getItems().add(toAddOnItemEntity(item, g.id().value(), ipos++));
+        }
+        return ge;
+    }
+
+    private static AddOnItemJpaEntity toAddOnItemEntity(AddOnItem item, UUID groupId, int pos) {
+        return new AddOnItemJpaEntity(
+            item.id().value(), groupId, item.name(),
+            item.price().amount(),
+            item.price().currency().getCurrencyCode(), pos);
     }
 }

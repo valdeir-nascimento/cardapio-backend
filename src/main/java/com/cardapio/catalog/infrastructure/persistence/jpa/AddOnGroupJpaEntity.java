@@ -17,7 +17,7 @@ public class AddOnGroupJpaEntity {
     @Column(name = "max_selection", nullable = false) private int maxSelection;
     @Column(nullable = false) private int position;
 
-    @OneToMany(mappedBy = "groupId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "groupId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("position ASC")
     private List<AddOnItemJpaEntity> items = new ArrayList<>();
 

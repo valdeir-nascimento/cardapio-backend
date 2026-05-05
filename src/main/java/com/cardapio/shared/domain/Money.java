@@ -27,6 +27,10 @@ public record Money(BigDecimal amount, Currency currency) {
         return new Money(new BigDecimal(amount), BRL);
     }
 
+    public static Money brl(BigDecimal amount) {
+        return new Money(amount, BRL);
+    }
+
     public static Money zeroBrl() {
         return brl("0");
     }

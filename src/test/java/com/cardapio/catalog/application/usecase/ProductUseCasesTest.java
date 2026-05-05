@@ -1,7 +1,13 @@
 package com.cardapio.catalog.application.usecase;
 
-import com.cardapio.catalog.application.command.*;
-import com.cardapio.catalog.domain.model.*;
+import com.cardapio.catalog.application.command.CreateProductCommand;
+import com.cardapio.catalog.application.command.ProductDrafts;
+import com.cardapio.catalog.application.command.SetProductAvailabilityCommand;
+import com.cardapio.catalog.application.command.SetProductStockCommand;
+import com.cardapio.catalog.domain.model.CategoryId;
+import com.cardapio.catalog.domain.model.Product;
+import com.cardapio.catalog.domain.model.ProductId;
+import com.cardapio.catalog.domain.model.Stock;
 import com.cardapio.catalog.domain.port.CategoryRepository;
 import com.cardapio.catalog.domain.port.ProductRepository;
 import com.cardapio.shared.domain.Money;
@@ -13,12 +19,15 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ProductUseCasesTest {
 
     private final ProductRepository products = mock(ProductRepository.class);
     private final CategoryRepository categories = mock(CategoryRepository.class);
+    private final ProductCommandValidator validator = new ProductCommandValidator(categories);
 
     @Test
     void createsProductWithVariationsAndAddOns() {
@@ -27,12 +36,12 @@ class ProductUseCasesTest {
         var cmd = new CreateProductCommand(
             "Pizza", "Mussarela", Money.brl("39.90"),
             CategoryId.newId(), null, true,
-            List.of(new CreateProductCommand.VariationDraft("M", Money.brl("0.00")),
-                    new CreateProductCommand.VariationDraft("G", Money.brl("10.00"))),
-            List.of(new CreateProductCommand.AddOnGroupDraft("Adicionais", 0, 3,
-                List.of(new CreateProductCommand.AddOnItemDraft("Bacon", Money.brl("3.00"))))));
+            List.of(new ProductDrafts.VariationDraft("M", Money.brl("0.00")),
+                    new ProductDrafts.VariationDraft("G", Money.brl("10.00"))),
+            List.of(new ProductDrafts.AddOnGroupDraft("Adicionais", 0, 3,
+                List.of(new ProductDrafts.AddOnItemDraft("Bacon", Money.brl("3.00"))))));
 
-        Result<ProductId> r = new CreateProductUseCase(products, categories).execute(cmd);
+        Result<ProductId> r = new CreateProductUseCase(products, validator).execute(cmd);
         assertThat(r.isSuccess()).isTrue();
         verify(products).save(any(Product.class));
     }
@@ -42,7 +51,7 @@ class ProductUseCasesTest {
         when(categories.existsById(any())).thenReturn(false);
         var cmd = new CreateProductCommand("X", "y", Money.brl("1.00"),
             CategoryId.newId(), null, false, List.of(), List.of());
-        Result<ProductId> r = new CreateProductUseCase(products, categories).execute(cmd);
+        Result<ProductId> r = new CreateProductUseCase(products, validator).execute(cmd);
         assertThat(r.isSuccess()).isFalse();
     }
 

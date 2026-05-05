@@ -28,9 +28,9 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/menu/**", "/api/v1/operating-hours").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/register",
-                                                    "/api/v1/auth/login",
-                                                    "/api/v1/auth/refresh",
-                                                    "/api/v1/admin/auth/login").permitAll()
+                    "/api/v1/auth/login",
+                    "/api/v1/auth/refresh",
+                    "/api/v1/admin/auth/login").permitAll()
                 .requestMatchers("/api/v1/admin/**").hasAnyRole("OWNER", "MANAGER", "OPERATOR")
                 .anyRequest().authenticated()
             )

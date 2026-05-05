@@ -6,21 +6,18 @@ import com.cardapio.identity.domain.port.CustomerRepository;
 import com.cardapio.identity.infrastructure.persistence.mapper.CustomerMapper;
 import com.cardapio.identity.infrastructure.persistence.repository.SpringCustomerJpaRepository;
 import com.cardapio.shared.domain.Email;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class CustomerRepositoryAdapter implements CustomerRepository {
 
     private final SpringCustomerJpaRepository jpa;
     private final Clock clock;
-
-    public CustomerRepositoryAdapter(SpringCustomerJpaRepository jpa, Clock clock) {
-        this.jpa = jpa;
-        this.clock = clock;
-    }
 
     @Override
     public void save(Customer customer) {

@@ -5,6 +5,7 @@ import com.cardapio.identity.domain.model.RefreshTokenId;
 import com.cardapio.identity.domain.port.RefreshTokenRepository;
 import com.cardapio.identity.infrastructure.persistence.mapper.RefreshTokenMapper;
 import com.cardapio.identity.infrastructure.persistence.repository.SpringRefreshTokenJpaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,13 +13,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class RefreshTokenRepositoryAdapter implements RefreshTokenRepository {
 
     private final SpringRefreshTokenJpaRepository jpa;
-
-    public RefreshTokenRepositoryAdapter(SpringRefreshTokenJpaRepository jpa) {
-        this.jpa = jpa;
-    }
 
     @Override
     public void save(RefreshToken token) {

@@ -1,13 +1,10 @@
 package com.cardapio.catalog.api.rest;
 
-import com.cardapio.api.error.ProblemDetails;
 import com.cardapio.catalog.api.dto.OperatingHoursRequest;
+import com.cardapio.catalog.application.CatalogFacade;
 import com.cardapio.catalog.application.command.UpdateOperatingHoursCommand;
-import com.cardapio.catalog.application.usecase.UpdateOperatingHoursUseCase;
-import com.cardapio.shared.domain.Result;
 import jakarta.validation.Valid;
-import org.springframework.http.MediaType;
-import org.springframework.http.ProblemDetail;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,24 +20,18 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/admin/operating-hours")
 @PreAuthorize("hasAnyRole('OWNER','MANAGER')")
+@RequiredArgsConstructor
 public class OperatingHoursAdminController {
 
-    private final UpdateOperatingHoursUseCase update;
-
-    public OperatingHoursAdminController(UpdateOperatingHoursUseCase update) { this.update = update; }
+    private final CatalogFacade catalog;
 
     @PutMapping
-    public ResponseEntity<?> updateAll(@Valid @RequestBody OperatingHoursRequest req) {
+    public ResponseEntity<Void> updateAll(@Valid @RequestBody OperatingHoursRequest req) {
         Map<DayOfWeek, List<UpdateOperatingHoursCommand.TimeRangeDraft>> map = req.hoursByDay().entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream()
                 .map(t -> new UpdateOperatingHoursCommand.TimeRangeDraft(t.openTime(), t.closeTime()))
                 .toList()));
-        Result<Void> r = update.execute(new UpdateOperatingHoursCommand(map));
-        return switch (r) {
-            case Result.Success<Void> s -> ResponseEntity.noContent().build();
-            case Result.Failure<Void> f -> ResponseEntity.unprocessableEntity()
-                .contentType(MediaType.parseMediaType("application/problem+json"))
-                .body((ProblemDetail) ProblemDetails.fromNotification(f.notification()));
-        };
+        catalog.updateOperatingHours(new UpdateOperatingHoursCommand(map));
+        return ResponseEntity.noContent().build();
     }
 }

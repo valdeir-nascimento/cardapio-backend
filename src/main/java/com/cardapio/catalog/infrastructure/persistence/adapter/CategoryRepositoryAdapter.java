@@ -5,6 +5,7 @@ import com.cardapio.catalog.domain.model.CategoryId;
 import com.cardapio.catalog.domain.port.CategoryRepository;
 import com.cardapio.catalog.infrastructure.persistence.mapper.CategoryMapper;
 import com.cardapio.catalog.infrastructure.persistence.repository.SpringCategoryJpaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
@@ -12,15 +13,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class CategoryRepositoryAdapter implements CategoryRepository {
 
     private final SpringCategoryJpaRepository jpa;
     private final Clock clock;
-
-    public CategoryRepositoryAdapter(SpringCategoryJpaRepository jpa, Clock clock) {
-        this.jpa = jpa;
-        this.clock = clock;
-    }
 
     @Override
     public void save(Category category) {

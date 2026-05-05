@@ -10,6 +10,7 @@ import com.cardapio.identity.domain.port.PasswordHasher;
 import com.cardapio.shared.domain.Email;
 import com.cardapio.shared.domain.Result;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 
@@ -21,7 +22,8 @@ class RegisterCustomerUseCaseTest {
 
     private final CustomerRepository repo = mock(CustomerRepository.class);
     private final PasswordHasher hasher = mock(PasswordHasher.class);
-    private final RegisterCustomerUseCase useCase = new RegisterCustomerUseCase(repo, hasher);
+    private final ApplicationEventPublisher events = mock(ApplicationEventPublisher.class);
+    private final RegisterCustomerUseCase useCase = new RegisterCustomerUseCase(repo, hasher, events);
 
     @Test
     void registersWhenEmailIsNew() {

@@ -1,70 +1,45 @@
 package com.cardapio.identity.api.rest;
 
-import com.cardapio.api.error.ProblemDetails;
-import com.cardapio.identity.api.dto.*;
-import com.cardapio.identity.application.command.*;
-import com.cardapio.identity.application.usecase.LoginCustomerUseCase;
-import com.cardapio.identity.application.usecase.RefreshTokenUseCase;
-import com.cardapio.identity.application.usecase.RegisterCustomerUseCase;
+import com.cardapio.identity.api.dto.LoginRequest;
+import com.cardapio.identity.api.dto.RefreshRequest;
+import com.cardapio.identity.api.dto.RegisterRequest;
+import com.cardapio.identity.api.dto.TokenPairResponse;
+import com.cardapio.identity.application.IdentityFacade;
+import com.cardapio.identity.application.command.LoginCommand;
+import com.cardapio.identity.application.command.RefreshTokenCommand;
+import com.cardapio.identity.application.command.RegisterCustomerCommand;
 import com.cardapio.identity.domain.model.CustomerId;
-import com.cardapio.identity.domain.model.TokenPair;
-import com.cardapio.shared.domain.Result;
 import jakarta.validation.Valid;
-import org.springframework.http.MediaType;
-import org.springframework.http.ProblemDetail;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
 public class CustomerAuthController {
 
-    private final RegisterCustomerUseCase register;
-    private final LoginCustomerUseCase login;
-    private final RefreshTokenUseCase refresh;
-
-    public CustomerAuthController(RegisterCustomerUseCase register, LoginCustomerUseCase login, RefreshTokenUseCase refresh) {
-        this.register = register; this.login = login; this.refresh = refresh;
-    }
+    private final IdentityFacade identity;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
-        Result<CustomerId> r = register.execute(new RegisterCustomerCommand(req.name(), req.email(), req.phoneNumber(), req.password()));
-        return switch (r) {
-            case Result.Success<CustomerId> s -> ResponseEntity.created(URI.create("/api/v1/me"))
-                .body(Map.of("id", s.value().value()));
-            case Result.Failure<CustomerId> f -> unprocessable(f);
-        };
+    public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody RegisterRequest req) {
+        CustomerId id = identity.registerCustomer(new RegisterCustomerCommand(req.name(), req.email(), req.phoneNumber(), req.password()));
+        return ResponseEntity.created(URI.create("/api/v1/me")).body(Map.of("id", id.value()));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
-        Result<TokenPair> r = login.execute(new LoginCommand(req.email(), req.password()));
-        return switch (r) {
-            case Result.Success<TokenPair> s -> ResponseEntity.ok(TokenPairResponse.from(s.value()));
-            case Result.Failure<TokenPair> f -> ResponseEntity.status(401)
-                .contentType(MediaType.parseMediaType("application/problem+json"))
-                .body(ProblemDetails.fromNotification(f.notification()));
-        };
+    public TokenPairResponse login(@Valid @RequestBody LoginRequest req) {
+        return TokenPairResponse.from(identity.loginCustomer(new LoginCommand(req.email(), req.password())));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@Valid @RequestBody RefreshRequest req) {
-        Result<TokenPair> r = refresh.execute(new RefreshTokenCommand(req.refreshToken()));
-        return switch (r) {
-            case Result.Success<TokenPair> s -> ResponseEntity.ok(TokenPairResponse.from(s.value()));
-            case Result.Failure<TokenPair> f -> ResponseEntity.status(401)
-                .contentType(MediaType.parseMediaType("application/problem+json"))
-                .body(ProblemDetails.fromNotification(f.notification()));
-        };
-    }
-
-    private ResponseEntity<ProblemDetail> unprocessable(Result.Failure<?> f) {
-        return ResponseEntity.unprocessableEntity()
-            .contentType(MediaType.parseMediaType("application/problem+json"))
-            .body(ProblemDetails.fromNotification(f.notification()));
+    public TokenPairResponse refresh(@Valid @RequestBody RefreshRequest req) {
+        return TokenPairResponse.from(identity.refresh(new RefreshTokenCommand(req.refreshToken())));
     }
 }

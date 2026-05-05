@@ -1,36 +1,30 @@
-// DeleteCategoryUseCase.java
 package com.cardapio.catalog.application.usecase;
 
 import com.cardapio.catalog.domain.model.CategoryId;
 import com.cardapio.catalog.domain.port.CategoryRepository;
 import com.cardapio.catalog.domain.port.ProductRepository;
-import com.cardapio.shared.domain.Notification;
+import com.cardapio.shared.domain.ErrorCode;
 import com.cardapio.shared.domain.Result;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class DeleteCategoryUseCase {
+
     private final CategoryRepository categories;
     private final ProductRepository products;
 
-    public DeleteCategoryUseCase(CategoryRepository categories, ProductRepository products) {
-        this.categories = categories; this.products = products;
-    }
-
     @Transactional
     public Result<Void> execute(CategoryId id) {
-        Notification n = Notification.empty();
         if (!categories.existsById(id)) {
-            n.addError("CATEGORY_NOT_FOUND", "categoria não encontrada");
-            return Result.failure(n);
+            return Result.failWith(ErrorCode.CATEGORY_NOT_FOUND);
         }
-        long pCount = products.countByCategory(id);
-        if (pCount > 0) {
-            n.addError("CATEGORY_HAS_PRODUCTS", "categoria tem produtos vinculados");
-            return Result.failure(n);
+        if (products.countByCategory(id) > 0) {
+            return Result.failWith(ErrorCode.CATEGORY_HAS_PRODUCTS);
         }
         categories.deleteById(id);
-        return Result.success(null);
+        return Result.ok();
     }
 }

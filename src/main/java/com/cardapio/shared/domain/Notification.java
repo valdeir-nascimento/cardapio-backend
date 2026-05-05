@@ -7,10 +7,27 @@ public final class Notification {
 
     private final List<NotificationError> errors = new ArrayList<>();
 
-    private Notification() {}
+    private Notification() {
+    }
 
     public static Notification empty() {
         return new Notification();
+    }
+
+    public static Notification ofSingle(ErrorCode code) {
+        return ofSingle(code, code.defaultMessage());
+    }
+
+    public static Notification ofSingle(ErrorCode code, String message) {
+        Notification n = new Notification();
+        n.addError(code, message);
+        return n;
+    }
+
+    public static Notification ofSingle(String code, String message) {
+        Notification n = new Notification();
+        n.addError(code, message);
+        return n;
     }
 
     public void addError(String code, String message) {
@@ -19,6 +36,22 @@ public final class Notification {
 
     public void addError(String field, String code, String message) {
         errors.add(new NotificationError(field, code, message));
+    }
+
+    public void addError(ErrorCode code) {
+        addError(code.name(), code.defaultMessage());
+    }
+
+    public void addError(ErrorCode code, String message) {
+        addError(code.name(), message);
+    }
+
+    public void addError(String field, ErrorCode code) {
+        addError(field, code.name(), code.defaultMessage());
+    }
+
+    public void addError(String field, ErrorCode code, String message) {
+        addError(field, code.name(), message);
     }
 
     public boolean hasErrors() {

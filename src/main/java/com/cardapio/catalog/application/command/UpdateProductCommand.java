@@ -1,4 +1,3 @@
-// UpdateProductCommand.java
 package com.cardapio.catalog.application.command;
 
 import com.cardapio.catalog.domain.model.CategoryId;
@@ -15,6 +14,11 @@ public record UpdateProductCommand(
     CategoryId categoryId,
     String imageUrl,
     boolean allowsHalfHalf,
-    List<CreateProductCommand.VariationDraft> variations,
-    List<CreateProductCommand.AddOnGroupDraft> addOnGroups
-) {}
+    List<ProductDrafts.VariationDraft> variations,
+    List<ProductDrafts.AddOnGroupDraft> addOnGroups
+) {
+    public UpdateProductCommand {
+        variations = variations != null ? List.copyOf(variations) : List.of();
+        addOnGroups = addOnGroups != null ? List.copyOf(addOnGroups) : List.of();
+    }
+}

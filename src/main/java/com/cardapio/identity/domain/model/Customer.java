@@ -50,4 +50,9 @@ public final class Customer extends AggregateRoot<CustomerId> {
     public Email email() { return email; }
     public PhoneNumber phoneNumber() { return phoneNumber; }
     public HashedPassword passwordHash() { return passwordHash; }
+
+    @Override
+    public String toString() {
+        return "Customer{id=" + id() + ", name='" + name + "', email=" + email.value() + "}";
+    }
 }

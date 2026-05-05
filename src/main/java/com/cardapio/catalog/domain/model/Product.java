@@ -94,4 +94,9 @@ public final class Product extends AggregateRoot<ProductId> {
     public Stock stock() { return stock; }
     public List<Variation> variations() { return Collections.unmodifiableList(variations); }
     public List<AddOnGroup> addOnGroups() { return Collections.unmodifiableList(addOnGroups); }
+
+    @Override
+    public String toString() {
+        return "Product{id=" + id() + ", name='" + name + "', available=" + available + "}";
+    }
 }

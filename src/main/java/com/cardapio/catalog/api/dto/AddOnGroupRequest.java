@@ -12,4 +12,5 @@ public record AddOnGroupRequest(
     @PositiveOrZero int minSelection,
     @PositiveOrZero int maxSelection,
     @NotNull @Valid List<AddOnItemRequest> items
-) {}
+) {
+}

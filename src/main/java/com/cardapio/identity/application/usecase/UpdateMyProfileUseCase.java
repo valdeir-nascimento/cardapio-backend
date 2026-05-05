@@ -4,37 +4,48 @@ import com.cardapio.identity.application.command.UpdateProfileCommand;
 import com.cardapio.identity.application.dto.CustomerProfile;
 import com.cardapio.identity.domain.model.Customer;
 import com.cardapio.identity.domain.port.CustomerRepository;
+import com.cardapio.shared.domain.ErrorCode;
 import com.cardapio.shared.domain.Notification;
 import com.cardapio.shared.domain.PhoneNumber;
 import com.cardapio.shared.domain.Result;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UpdateMyProfileUseCase {
+
     private final CustomerRepository customers;
-    public UpdateMyProfileUseCase(CustomerRepository customers) { this.customers = customers; }
 
     @Transactional
     public Result<CustomerProfile> execute(UpdateProfileCommand cmd) {
         Notification n = Notification.empty();
 
-        if (cmd.name() == null || cmd.name().isBlank()) n.addError("name", "BLANK_NAME", "nome obrigatório");
+        if (cmd.name() == null || cmd.name().isBlank()) {
+            n.addError("name", ErrorCode.BLANK_NAME);
+        }
 
         PhoneNumber phone = null;
-        try { phone = PhoneNumber.of(cmd.phoneNumber()); }
-        catch (RuntimeException e) { n.addError("phoneNumber", "INVALID_PHONE", "telefone inválido"); }
+        try {
+            phone = PhoneNumber.of(cmd.phoneNumber());
+        } catch (RuntimeException e) {
+            n.addError("phoneNumber", ErrorCode.INVALID_PHONE);
+        }
 
         Optional<Customer> maybe = customers.findById(cmd.customerId());
-        if (maybe.isEmpty()) n.addError("CUSTOMER_NOT_FOUND", "cliente não encontrado");
+        if (maybe.isEmpty()) {
+            n.addError(ErrorCode.CUSTOMER_NOT_FOUND);
+        }
 
         if (n.hasErrors()) return Result.failure(n);
 
-        Customer c = maybe.get();
-        c.updateProfile(cmd.name(), phone);
-        customers.save(c);
-        return Result.success(new CustomerProfile(c.id(), c.name(), c.email().value(), c.phoneNumber().value()));
+        Customer customer = maybe.get();
+        customer.updateProfile(cmd.name(), phone);
+        customers.save(customer);
+
+        return Result.success(new CustomerProfile(customer.id(), customer.name(), customer.email().value(), customer.phoneNumber().value()));
     }
 }

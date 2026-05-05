@@ -1,5 +1,8 @@
 target/
 .mvn/wrapper/maven-wrapper.jar
+.claude/
+claude-code-java/
+docs/
 *.iml
 .idea/
 .vscode/

@@ -45,4 +45,9 @@ public final class Category extends AggregateRoot<CategoryId> {
     public String name() { return name; }
     public int displayOrder() { return displayOrder; }
     public boolean isActive() { return active; }
+
+    @Override
+    public String toString() {
+        return "Category{id=" + id() + ", name='" + name + "', active=" + active + "}";
+    }
 }

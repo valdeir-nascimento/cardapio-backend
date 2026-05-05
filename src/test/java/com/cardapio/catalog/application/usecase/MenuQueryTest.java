@@ -10,6 +10,7 @@ import com.cardapio.shared.domain.Money;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,7 +28,7 @@ class MenuQueryTest {
         Product pizza = Product.create("Margherita", "desc", Money.brl("39.90"), catId, null, false);
 
         when(categories.findAllActive()).thenReturn(List.of(cat));
-        when(products.findAvailableByCategory(catId)).thenReturn(List.of(pizza));
+        when(products.findAvailableGroupedByCategories(List.of(catId))).thenReturn(Map.of(catId, List.of(pizza)));
 
         MenuView menu = new GetMenuQuery(categories, products).execute();
         assertThat(menu.categories()).hasSize(1);

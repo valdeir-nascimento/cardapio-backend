@@ -13,7 +13,8 @@ public final class ProblemDetails {
 
     private static final String TYPE_BASE = "https://cardapio/errors/";
 
-    private ProblemDetails() {}
+    private ProblemDetails() {
+    }
 
     public static ProblemDetail fromDomainException(DomainException ex) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
