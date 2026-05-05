@@ -13,12 +13,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.security.test.context.support.WithMockUser;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@WithMockUser
 @Import({PostgresTestContainerConfig.class, GlobalExceptionHandlerTest.TestController.class})
 class GlobalExceptionHandlerTest {
 
