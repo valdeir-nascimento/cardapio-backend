@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -25,6 +26,11 @@ public class GlobalExceptionHandler {
         log.info("notification errors: {}", ex.notification().errors());
         ProblemDetail pd = ProblemDetails.fromNotification(ex.notification());
         return ResponseEntity.unprocessableEntity().body(pd);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public void handleAccessDenied(AccessDeniedException ex) throws AccessDeniedException {
+        throw ex; // let Spring Security translate to 403
     }
 
     @ExceptionHandler(Exception.class)
