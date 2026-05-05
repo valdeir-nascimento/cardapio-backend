@@ -3,6 +3,10 @@ spring:
     name: cardapio-backend
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
+  modulith:
+    events:
+      jdbc-schema-initialization:
+        enabled: false   # we manage schema with Flyway
 
 management:
   endpoints:
