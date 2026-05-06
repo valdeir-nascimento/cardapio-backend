@@ -1,7 +1,9 @@
 package com.cardapio.ordering.api.dto;
 
 import com.cardapio.ordering.application.command.PlaceOrderCommand;
+import com.cardapio.ordering.domain.model.ComandaId;
 import com.cardapio.ordering.domain.model.OrderModality;
+import com.cardapio.ordering.domain.model.TableId;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,14 +13,22 @@ import java.util.UUID;
 
 public record PlaceOrderRequest(
     @NotNull OrderModality modality,
-    @Valid AddressRequest address
+    @Valid AddressRequest address,
+    UUID tableId,
+    UUID comandaId
 ) {
     public PlaceOrderCommand toCommand(UUID customerId, String idempotencyKey) {
         PlaceOrderCommand.DeliveryAddressInput a = address == null ? null
             : new PlaceOrderCommand.DeliveryAddressInput(
                 address.street(), address.number(), address.complement(),
                 address.district(), address.city(), address.postalCode(), address.neighborhoodId());
-        return new PlaceOrderCommand(customerId, modality, a, idempotencyKey);
+        return new PlaceOrderCommand(
+            customerId,
+            modality,
+            a,
+            tableId == null ? null : TableId.of(tableId),
+            comandaId == null ? null : ComandaId.of(comandaId),
+            idempotencyKey);
     }
 
     public record AddressRequest(

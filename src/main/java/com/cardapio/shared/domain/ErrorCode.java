@@ -56,6 +56,17 @@ public enum ErrorCode {
     PICKUP_MUST_HAVE_NO_FEE("retirada não admite taxa de entrega"),
     IDEMPOTENCY_KEY_REQUIRED("Idempotency-Key obrigatório"),
 
+    // Ordering – Dine-in (Table + Comanda)
+    TABLE_NOT_FOUND("mesa não encontrada"),
+    TABLE_NUMBER_TAKEN("número de mesa já cadastrado"),
+    TABLE_INACTIVE("mesa inativa"),
+    COMANDA_NOT_FOUND("comanda não encontrada"),
+    COMANDA_ALREADY_OPEN("já existe uma comanda aberta nessa mesa"),
+    COMANDA_CLOSED("comanda já está fechada"),
+    COMANDA_NOT_MEMBER("cliente não faz parte da comanda"),
+    COMANDA_HAS_PENDING_ORDERS("comanda tem pedidos pendentes"),
+    DINE_IN_CONTEXT_REQUIRED("pedido DINE_IN requer tableId e comandaId"),
+
     // Payment
     PAYMENT_NOT_FOUND("pagamento não encontrado"),
     PAYMENT_ORDER_NOT_PAYABLE("pedido não está em estado pagável"),
