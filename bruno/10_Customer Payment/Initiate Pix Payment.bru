@@ -1,0 +1,39 @@
+meta {
+  name: Initiate Pix Payment
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}/payment
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "method": "PIX"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("paymentId", res.body.id);
+  }
+}
+
+docs {
+  Pré-requisitos:
+  1. `mercadopago.enabled=true` no application.yml + `MP_ACCESS_TOKEN` válido (caso contrário, `NoOpPaymentGateway` levanta `MP_DISABLED`).
+  2. Pedido em status RECEIVED (rodar `07_Customer Orders/Place Order (Delivery)` antes).
+
+  Resposta inclui `qrCode` (copia-e-cola) e `qrCodeBase64` (PNG).
+}

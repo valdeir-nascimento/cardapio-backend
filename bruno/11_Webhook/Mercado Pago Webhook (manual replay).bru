@@ -1,0 +1,42 @@
+meta {
+  name: Mercado Pago Webhook (manual replay)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/webhooks/mercado-pago
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-signature: ts=1710000000,v1=00000000000000000000000000000000
+  x-request-id: bruno-test-replay
+}
+
+body:json {
+  {
+    "id": 123456,
+    "live_mode": false,
+    "type": "payment",
+    "date_created": "2026-05-05T20:00:00Z",
+    "user_id": "test-user",
+    "api_version": "v1",
+    "action": "payment.updated",
+    "data": {
+      "id": "MP-PAYMENT-ID-FAKE-12345"
+    }
+  }
+}
+
+docs {
+  Endpoint público (sem auth) — segurança via HMAC.
+
+  Em sandbox local:
+  - Sem MP configurado: a verificação de assinatura falha mas o endpoint sempre retorna 200 (silencioso, evita replay storms do MP).
+  - Com MP real: configurar `ngrok http 8080` e setar `mercadopago.notification-url` para a URL do ngrok.
+
+  O `data.id` deve corresponder ao `gatewayTxId` salvo no banco para fazer efeito; caso contrário o handler ignora (a tx pode não ter sido criada localmente ainda — race condition).
+}

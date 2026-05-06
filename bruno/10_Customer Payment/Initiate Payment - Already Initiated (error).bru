@@ -1,0 +1,29 @@
+meta {
+  name: Initiate Payment - Already Initiated (error)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}/payment
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "method": "PIX"
+  }
+}
+
+docs {
+  Esperado: 422 com `PAYMENT_ALREADY_INITIATED` quando já existe transação PENDING para o pedido.
+}

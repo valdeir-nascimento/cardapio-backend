@@ -31,7 +31,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/register",
                     "/api/v1/auth/login",
                     "/api/v1/auth/refresh",
-                    "/api/v1/admin/auth/login").permitAll()
+                    "/api/v1/admin/auth/login",
+                    "/api/v1/webhooks/mercado-pago").permitAll()
                 .requestMatchers("/api/v1/admin/**").hasAnyRole("OWNER", "MANAGER", "OPERATOR")
                 .anyRequest().authenticated()
             )

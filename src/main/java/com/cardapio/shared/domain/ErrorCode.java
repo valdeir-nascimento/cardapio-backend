@@ -54,7 +54,16 @@ public enum ErrorCode {
     ADDRESS_REQUIRED("endereço é obrigatório para entrega"),
     NEIGHBORHOOD_NOT_SERVED("bairro não atendido"),
     PICKUP_MUST_HAVE_NO_FEE("retirada não admite taxa de entrega"),
-    IDEMPOTENCY_KEY_REQUIRED("Idempotency-Key obrigatório");
+    IDEMPOTENCY_KEY_REQUIRED("Idempotency-Key obrigatório"),
+
+    // Payment
+    PAYMENT_NOT_FOUND("pagamento não encontrado"),
+    PAYMENT_ORDER_NOT_PAYABLE("pedido não está em estado pagável"),
+    PAYMENT_ALREADY_INITIATED("já existe pagamento ativo para este pedido"),
+    CARD_TOKEN_REQUIRED("cardToken obrigatório para pagamento por cartão"),
+    PAYMENT_GATEWAY_FAILED("falha ao processar pagamento no gateway"),
+    PAYMENT_INVALID_WEBHOOK_SIGNATURE("assinatura de webhook inválida"),
+    PAYMENT_NOT_REFUNDABLE("pagamento não pode ser reembolsado neste estado");
 
     private final String defaultMessage;
 
