@@ -2,7 +2,7 @@ package com.cardapio.ordering.infrastructure.qr;
 
 import com.cardapio.ordering.domain.port.QrStorage;
 import io.github.resilience4j.retry.annotation.Retry;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -17,7 +17,7 @@ import java.net.URI;
 import java.time.Duration;
 
 @Component
-@ConditionalOnBean(S3Client.class)
+@ConditionalOnProperty(prefix = "r2", name = "enabled", havingValue = "true")
 public class R2QrStorage implements QrStorage {
 
     private final S3Client s3;

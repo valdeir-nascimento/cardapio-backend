@@ -1,9 +1,8 @@
 package com.cardapio.ordering.infrastructure.qr;
 
 import com.cardapio.ordering.domain.port.QrStorage;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.services.s3.S3Client;
 
 import java.net.URI;
 import java.time.Duration;
@@ -15,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * deterministic local URL that the front-end can render without a real bucket.
  */
 @Component
-@ConditionalOnMissingBean(S3Client.class)
+@ConditionalOnProperty(prefix = "r2", name = "enabled", havingValue = "false", matchIfMissing = true)
 public class InMemoryQrStorage implements QrStorage {
 
     private final Map<String, byte[]> store = new ConcurrentHashMap<>();

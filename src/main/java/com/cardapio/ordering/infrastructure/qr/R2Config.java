@@ -15,7 +15,7 @@ import java.net.URI;
 
 @Configuration
 @EnableConfigurationProperties(R2Properties.class)
-@ConditionalOnProperty(prefix = "r2", name = "endpoint")
+@ConditionalOnProperty(prefix = "r2", name = "enabled", havingValue = "true")
 public class R2Config {
 
     @Bean(destroyMethod = "close")
