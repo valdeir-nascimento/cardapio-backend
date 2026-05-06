@@ -7,6 +7,7 @@
         "ordering::OrderingFacade",
         "ordering::dto",
         "ordering::ids",
+        "ordering::events",
         "identity::IdentityFacade",
         "identity::dto",
         "identity::ids",
