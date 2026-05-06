@@ -15,9 +15,11 @@ import com.cardapio.catalog.application.dto.OperatingHoursView;
 import com.cardapio.catalog.application.dto.ProductDetailsView;
 import com.cardapio.catalog.domain.model.CategoryId;
 import com.cardapio.catalog.domain.model.ProductId;
+import org.springframework.modulith.NamedInterface;
 
 import java.util.List;
 
+@NamedInterface("CatalogFacade")
 public interface CatalogFacade {
 
     // Product
