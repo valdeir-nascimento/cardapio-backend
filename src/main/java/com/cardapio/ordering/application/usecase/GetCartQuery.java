@@ -10,6 +10,9 @@ import com.cardapio.ordering.domain.model.SelectedVariation;
 import com.cardapio.ordering.domain.port.CartRepository;
 import com.cardapio.ordering.domain.port.CatalogQueryPort;
 import com.cardapio.ordering.domain.port.CatalogQueryPort.ProductSnapshot;
+import com.cardapio.promotion.application.CouponQueryPort;
+import com.cardapio.promotion.domain.dto.CouponEvaluation;
+import com.cardapio.promotion.domain.model.CouponCode;
 import com.cardapio.shared.domain.Money;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,7 @@ public class GetCartQuery {
 
     private final CartRepository cartRepo;
     private final CatalogQueryPort catalog;
+    private final CouponQueryPort coupons;
     private final java.time.Clock clock;
 
     @Transactional(readOnly = true)
@@ -74,7 +78,22 @@ public class GetCartQuery {
             ));
         }
 
+        String couponCode = cart.couponCode().orElse(null);
+        BigDecimal discount = BigDecimal.ZERO.setScale(currency.getDefaultFractionDigits());
+        if (couponCode != null) {
+            try {
+                var evaluation = coupons.evaluate(CouponCode.of(couponCode), Money.of(subtotal, currency));
+                if (evaluation instanceof CouponEvaluation.Applicable applicable) {
+                    discount = applicable.discount().amount();
+                }
+            } catch (IllegalArgumentException ignored) {
+                // malformed code stored on cart — surface as no discount
+            }
+        }
+        BigDecimal discountedTotal = subtotal.subtract(discount);
+
         return new CartView(cart.id().value(), customerId, views, subtotal,
-            currency.getCurrencyCode(), hasUnavailable);
+            currency.getCurrencyCode(), hasUnavailable,
+            couponCode, discount, discountedTotal);
     }
 }

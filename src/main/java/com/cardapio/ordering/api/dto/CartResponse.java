@@ -13,11 +13,15 @@ public record CartResponse(
     List<CartItemResponse> items,
     BigDecimal subtotal,
     String currency,
-    boolean hasUnavailableItems
+    boolean hasUnavailableItems,
+    String couponCode,
+    BigDecimal discount,
+    BigDecimal discountedTotal
 ) {
     public static CartResponse from(CartView v) {
         List<CartItemResponse> items = v.items().stream().map(CartResponse::toItem).toList();
-        return new CartResponse(v.id(), v.customerId(), items, v.subtotal(), v.currency(), v.hasUnavailableItems());
+        return new CartResponse(v.id(), v.customerId(), items, v.subtotal(), v.currency(),
+            v.hasUnavailableItems(), v.couponCode(), v.discount(), v.discountedTotal());
     }
 
     private static CartItemResponse toItem(CartItemView i) {

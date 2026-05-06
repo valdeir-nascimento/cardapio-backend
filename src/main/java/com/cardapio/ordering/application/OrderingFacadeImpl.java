@@ -14,12 +14,14 @@ import com.cardapio.ordering.application.dto.OrderView;
 import com.cardapio.ordering.application.dto.PlacedOrderView;
 import com.cardapio.ordering.application.usecase.AddCartItemUseCase;
 import com.cardapio.ordering.application.usecase.AdvanceOrderStatusUseCase;
+import com.cardapio.ordering.application.usecase.ApplyCouponUseCase;
 import com.cardapio.ordering.application.usecase.CancelOrderUseCase;
 import com.cardapio.ordering.application.usecase.GetCartQuery;
 import com.cardapio.ordering.application.usecase.GetOrderQuery;
 import com.cardapio.ordering.application.usecase.ListOrdersQuery;
 import com.cardapio.ordering.application.usecase.PlaceOrderUseCase;
 import com.cardapio.ordering.application.usecase.RemoveCartItemUseCase;
+import com.cardapio.ordering.application.usecase.RemoveCouponUseCase;
 import com.cardapio.ordering.application.usecase.UpdateCartItemUseCase;
 import com.cardapio.ordering.domain.model.OrderId;
 import com.cardapio.ordering.domain.model.OrderStatus;
@@ -38,6 +40,8 @@ public class OrderingFacadeImpl implements OrderingFacade {
     private final AddCartItemUseCase addCartItem;
     private final UpdateCartItemUseCase updateCartItem;
     private final RemoveCartItemUseCase removeCartItem;
+    private final ApplyCouponUseCase applyCoupon;
+    private final RemoveCouponUseCase removeCoupon;
     private final GetCartQuery getCart;
     private final PlaceOrderUseCase placeOrder;
     private final GetOrderQuery getOrder;
@@ -63,6 +67,16 @@ public class OrderingFacadeImpl implements OrderingFacade {
     @Override
     public CartView getMyCart(UUID customerId) {
         return getCart.getOrEmpty(customerId);
+    }
+
+    @Override
+    public CartView applyCoupon(UUID customerId, String code) {
+        return applyCoupon.execute(customerId, code).orElseThrow(OrderingFacadeImpl::toException);
+    }
+
+    @Override
+    public CartView removeCoupon(UUID customerId) {
+        return removeCoupon.execute(customerId);
     }
 
     @Override

@@ -10,5 +10,8 @@ public record CartView(
     List<CartItemView> items,
     BigDecimal subtotal,
     String currency,
-    boolean hasUnavailableItems
+    boolean hasUnavailableItems,
+    String couponCode,
+    BigDecimal discount,
+    BigDecimal discountedTotal
 ) {}

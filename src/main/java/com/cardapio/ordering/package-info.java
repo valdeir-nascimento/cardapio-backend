@@ -10,7 +10,11 @@
         "delivery::DeliveryFacade",
         "delivery::ids",
         "identity::security",
-        "identity::ids"
+        "identity::ids",
+        "promotion::CouponQueryPort",
+        "promotion::ids",
+        "promotion::dto",
+        "promotion::evaluation"
     }
 )
 package com.cardapio.ordering;
