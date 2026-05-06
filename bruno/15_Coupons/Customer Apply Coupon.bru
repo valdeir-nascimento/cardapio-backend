@@ -1,0 +1,30 @@
+meta {
+  name: Customer Apply Coupon
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/cart/coupon
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "code": "{{couponCode}}"
+  }
+}
+
+docs {
+  Aplica cupom no carrinho. Resposta inclui discount + discountedTotal
+  preview.
+}

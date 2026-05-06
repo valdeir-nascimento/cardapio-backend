@@ -1,0 +1,41 @@
+meta {
+  name: Admin Create Coupon (PERCENT)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/coupons
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "code": "WELCOME10",
+    "type": "PERCENT",
+    "value": 10,
+    "currency": "BRL",
+    "minOrderValue": 30.00,
+    "maxUses": 100
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("couponId", res.body.id);
+    bru.setEnvVar("couponCode", res.body.code);
+  }
+}
+
+docs {
+  Cria cupom 10% off com pedido mínimo de R$ 30 e até 100 usos.
+}
