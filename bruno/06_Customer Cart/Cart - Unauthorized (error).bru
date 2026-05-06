@@ -1,0 +1,14 @@
+meta {
+  name: Cart - Unauthorized (error)
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/api/v1/cart
+  auth: none
+}
+
+docs {
+  Sem token → 401.
+}

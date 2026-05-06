@@ -1,0 +1,31 @@
+meta {
+  name: Create Category - Validation Error (error)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/categories
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "",
+    "displayOrder": -1,
+    "active": true
+  }
+}
+
+docs {
+  Esperado: 400/422 — name vazio + displayOrder negativo.
+}

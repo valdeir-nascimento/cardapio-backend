@@ -1,0 +1,26 @@
+meta {
+  name: Admin Login - Invalid (error)
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "ghost@cardapio.local",
+    "password": "WrongPass!1"
+  }
+}
+
+docs {
+  Esperado: 401.
+}

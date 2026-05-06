@@ -1,0 +1,35 @@
+meta {
+  name: Create Product (Pizza Margherita)
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/products
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Pizza Margherita",
+    "description": "Molho artesanal, mussarela de búfala e manjericão fresco.",
+    "basePrice": 54.90,
+    "categoryId": "{{categoryId}}",
+    "imageUrl": "https://cdn.example.com/pizzas/margherita.jpg",
+    "allowsHalfHalf": true,
+    "variations": [
+      { "name": "Média",  "priceModifier": 0.00 },
+      { "name": "Grande", "priceModifier": 12.00 }
+    ],
+    "addOnGroups": []
+  }
+}

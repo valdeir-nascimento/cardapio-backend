@@ -1,0 +1,29 @@
+meta {
+  name: Initiate Card Payment - Missing Token (error)
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}/payment
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "method": "CARD"
+  }
+}
+
+docs {
+  Esperado: 422 com `CARD_TOKEN_REQUIRED`.
+}

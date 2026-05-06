@@ -1,0 +1,32 @@
+meta {
+  name: Add Item - Invalid Quantity (error)
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/cart/items
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "productId": "{{productId}}",
+    "quantity": 0,
+    "addOns": [],
+    "observation": ""
+  }
+}
+
+docs {
+  Esperado: 400 (bean validation `@Min(1)`).
+}

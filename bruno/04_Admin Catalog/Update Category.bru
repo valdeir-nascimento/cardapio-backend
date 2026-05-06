@@ -1,0 +1,27 @@
+meta {
+  name: Update Category
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/v1/admin/categories/{{categoryId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Pizzas Especiais",
+    "displayOrder": 1,
+    "active": true
+  }
+}

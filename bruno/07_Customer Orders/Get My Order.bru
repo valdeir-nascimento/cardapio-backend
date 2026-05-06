@@ -1,0 +1,18 @@
+meta {
+  name: Get My Order
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Retorna o pedido se o customer for o dono. Pedido de outro cliente → 404.
+}

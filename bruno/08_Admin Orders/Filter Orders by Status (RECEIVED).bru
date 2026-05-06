@@ -1,0 +1,19 @@
+meta {
+  name: Filter Orders by Status (RECEIVED)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/orders?status=RECEIVED&limit=50
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  status: RECEIVED
+  limit: 50
+}

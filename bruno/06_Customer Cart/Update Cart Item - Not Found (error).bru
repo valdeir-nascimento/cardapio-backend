@@ -1,0 +1,30 @@
+meta {
+  name: Update Cart Item - Not Found (error)
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{baseUrl}}/api/v1/cart/items/00000000-0000-0000-0000-000000000000
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "quantity": 3,
+    "observation": ""
+  }
+}
+
+docs {
+  Esperado: 404 com code `CART_ITEM_NOT_FOUND`.
+}

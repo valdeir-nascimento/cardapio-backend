@@ -1,0 +1,30 @@
+meta {
+  name: Advance Status to CONFIRMED
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/admin/orders/{{orderId}}/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "CONFIRMED"
+  }
+}
+
+docs {
+  Workflow DELIVERY: RECEIVED → CONFIRMED → PREPARING → READY → OUT_FOR_DELIVERY → DELIVERED
+  Workflow PICKUP:    RECEIVED → CONFIRMED → PREPARING → READY → PICKED_UP
+}

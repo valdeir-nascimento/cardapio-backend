@@ -1,0 +1,19 @@
+meta {
+  name: Cancel Order - Operator Forbidden (error)
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/orders/{{orderId}}/cancel
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Pré-requisito: rodar `01_Auth/Admin Login (OPERATOR)`.
+  Esperado: 403.
+}

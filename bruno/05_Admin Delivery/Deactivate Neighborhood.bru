@@ -1,0 +1,32 @@
+meta {
+  name: Deactivate Neighborhood
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/api/v1/admin/neighborhoods/{{neighborhoodId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Pituba",
+    "city": "Salvador",
+    "fee": 9.50,
+    "active": false
+  }
+}
+
+docs {
+  Bairro inativo não aparece em `GET /api/v1/delivery/neighborhoods` e o checkout retorna `NEIGHBORHOOD_NOT_SERVED`.
+}

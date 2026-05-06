@@ -1,0 +1,14 @@
+meta {
+  name: Get Product Details - Not Found (error)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/menu/products/00000000-0000-0000-0000-000000000000
+  auth: none
+}
+
+docs {
+  Esperado: 404 com code `PRODUCT_NOT_FOUND`.
+}

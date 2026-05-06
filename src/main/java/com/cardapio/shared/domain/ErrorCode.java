@@ -26,7 +26,44 @@ public enum ErrorCode {
     INVALID_STOCK("estoque inválido"),
 
     // Catalog – Operating Hours
-    INVALID_HOURS("horário inválido");
+    INVALID_HOURS("horário inválido"),
+
+    // Delivery
+    NEIGHBORHOOD_NOT_FOUND("bairro não encontrado"),
+    NEIGHBORHOOD_ALREADY_EXISTS("bairro já cadastrado nessa cidade"),
+    BLANK_CITY("cidade obrigatória"),
+    INVALID_FEE("taxa inválida"),
+
+    // Ordering
+    CART_EMPTY("carrinho vazio"),
+    CART_ITEM_NOT_FOUND("item do carrinho não encontrado"),
+    INVALID_QUANTITY("quantidade inválida"),
+    INVALID_OBSERVATION("observação inválida"),
+    PRODUCT_UNAVAILABLE("produto indisponível"),
+    PRODUCT_OUT_OF_STOCK("produto sem estoque suficiente"),
+    VARIATION_NOT_FOUND("variação não encontrada"),
+    ADDON_GROUP_NOT_FOUND("grupo de adicionais não encontrado"),
+    ADDON_ITEM_NOT_FOUND("adicional não encontrado"),
+    ADDON_GROUP_SELECTION_OUT_OF_RANGE("seleção de adicionais fora dos limites permitidos"),
+    HALF_AND_HALF_NOT_ALLOWED("produto não permite meio-a-meio"),
+    HALF_AND_HALF_REQUIRES_TWO_PRODUCTS("meio-a-meio requer dois produtos distintos"),
+    HALF_AND_HALF_INCOMPATIBLE_WITH_VARIATION("meio-a-meio é incompatível com variação"),
+    ORDER_NOT_FOUND("pedido não encontrado"),
+    ORDER_INVALID_TRANSITION("transição de status inválida"),
+    ORDER_ALREADY_TERMINAL("pedido já está em estado terminal"),
+    ADDRESS_REQUIRED("endereço é obrigatório para entrega"),
+    NEIGHBORHOOD_NOT_SERVED("bairro não atendido"),
+    PICKUP_MUST_HAVE_NO_FEE("retirada não admite taxa de entrega"),
+    IDEMPOTENCY_KEY_REQUIRED("Idempotency-Key obrigatório"),
+
+    // Payment
+    PAYMENT_NOT_FOUND("pagamento não encontrado"),
+    PAYMENT_ORDER_NOT_PAYABLE("pedido não está em estado pagável"),
+    PAYMENT_ALREADY_INITIATED("já existe pagamento ativo para este pedido"),
+    CARD_TOKEN_REQUIRED("cardToken obrigatório para pagamento por cartão"),
+    PAYMENT_GATEWAY_FAILED("falha ao processar pagamento no gateway"),
+    PAYMENT_INVALID_WEBHOOK_SIGNATURE("assinatura de webhook inválida"),
+    PAYMENT_NOT_REFUNDABLE("pagamento não pode ser reembolsado neste estado");
 
     private final String defaultMessage;
 

@@ -1,0 +1,19 @@
+meta {
+  name: Cancel Order - After Preparing (error)
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/orders/{{orderId}}/cancel
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Pré-requisito: pedido já em PREPARING ou estado posterior.
+  Esperado: 422 com `ORDER_INVALID_TRANSITION` — janela de cancelamento fechada.
+}

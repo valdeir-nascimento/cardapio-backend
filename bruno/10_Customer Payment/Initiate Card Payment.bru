@@ -1,0 +1,38 @@
+meta {
+  name: Initiate Card Payment (sandbox token)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}/payment
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "method": "CARD",
+    "cardToken": "TEST-CARD-TOKEN-FROM-MP-FRONTEND-SDK"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("paymentId", res.body.id);
+  }
+}
+
+docs {
+  O `cardToken` deve ser obtido via SDK Frontend do Mercado Pago.
+  Em sandbox, gerar via: https://www.mercadopago.com.br/developers/pt/docs/checkout-api/integration-test/test-cards
+  A resposta já vem com status final (APPROVED ou REJECTED).
+}

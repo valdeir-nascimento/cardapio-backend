@@ -1,0 +1,30 @@
+meta {
+  name: Place Order - Missing Idempotency-Key (error)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "modality": "PICKUP",
+    "address": null
+  }
+}
+
+docs {
+  Esperado: 400 — header `Idempotency-Key` é obrigatório.
+}

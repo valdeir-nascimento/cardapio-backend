@@ -1,0 +1,30 @@
+meta {
+  name: Advance Status - Invalid Skip (error)
+  type: http
+  seq: 11
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/admin/orders/{{orderId}}/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "PREPARING"
+  }
+}
+
+docs {
+  Pré-requisito: pedido em RECEIVED (não confirmado).
+  Esperado: 422 com `ORDER_INVALID_TRANSITION` — não pode pular CONFIRMED.
+}

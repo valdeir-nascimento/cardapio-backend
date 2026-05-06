@@ -1,0 +1,23 @@
+meta {
+  name: List My Orders
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/api/v1/me/orders?limit=20&offset=0
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  limit: 20
+  offset: 0
+}
+
+docs {
+  Histórico do próprio cliente, ordenado por `placedAt` desc.
+}

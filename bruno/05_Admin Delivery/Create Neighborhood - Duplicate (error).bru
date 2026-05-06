@@ -1,0 +1,32 @@
+meta {
+  name: Create Neighborhood - Duplicate (error)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/neighborhoods
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Pituba",
+    "city": "Salvador",
+    "fee": 9.00,
+    "active": true
+  }
+}
+
+docs {
+  Esperado: 422 com `NEIGHBORHOOD_ALREADY_EXISTS` (constraint UNIQUE name+city).
+}

@@ -1,0 +1,19 @@
+meta {
+  name: Get Order - Not Owned (error)
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Pré-requisito: rodar `01_Auth/Customer Login` com OUTRO usuário (ex.: joao@example.com — troque temporariamente os env vars).
+  Esperado: 404 (não 403, para não vazar existência do pedido).
+}

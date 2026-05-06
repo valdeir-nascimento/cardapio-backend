@@ -1,0 +1,36 @@
+meta {
+  name: Add Item with Variation and Addons
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/cart/items
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "productId": "{{productId}}",
+    "variationId": "{{variationId}}",
+    "addOns": [
+      { "groupId": "{{addOnGroupId}}", "itemId": "{{addOnItemId}}", "quantity": 2 }
+    ],
+    "observation": "ponto bem passado",
+    "quantity": 1
+  }
+}
+
+docs {
+  Pré-requisito: rodar `03_Public/Get Product Details` para preencher `variationId`/`addOnGroupId`/`addOnItemId`.
+  O preço congelado do item será (basePrice + variation.modifier + addon.price * 2) * 1.
+}

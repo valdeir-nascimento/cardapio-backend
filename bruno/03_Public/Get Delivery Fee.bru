@@ -1,0 +1,14 @@
+meta {
+  name: Get Delivery Fee
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/delivery/fee?neighborhoodId={{neighborhoodId}}
+  auth: none
+}
+
+params:query {
+  neighborhoodId: {{neighborhoodId}}
+}

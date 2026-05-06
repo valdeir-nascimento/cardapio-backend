@@ -1,0 +1,32 @@
+meta {
+  name: Add Item - Product Not Found (error)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/cart/items
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "productId": "00000000-0000-0000-0000-000000000000",
+    "quantity": 1,
+    "addOns": [],
+    "observation": ""
+  }
+}
+
+docs {
+  Esperado: 422/404 com code `PRODUCT_NOT_FOUND`.
+}

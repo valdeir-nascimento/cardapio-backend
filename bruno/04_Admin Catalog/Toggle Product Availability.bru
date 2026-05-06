@@ -1,0 +1,25 @@
+meta {
+  name: Toggle Product Availability
+  type: http
+  seq: 11
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/admin/products/{{productId}}/availability
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "available": false
+  }
+}

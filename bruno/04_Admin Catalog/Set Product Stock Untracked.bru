@@ -1,0 +1,29 @@
+meta {
+  name: Set Product Stock Untracked
+  type: http
+  seq: 13
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/admin/products/{{productId}}/stock
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "quantity": null
+  }
+}
+
+docs {
+  `quantity: null` → estoque ilimitado (untracked).
+}

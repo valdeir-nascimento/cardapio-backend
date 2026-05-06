@@ -1,0 +1,26 @@
+meta {
+  name: Update Me
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/v1/me
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Maria Silva (atualizada)",
+    "phoneNumber": "+5511999998888"
+  }
+}
