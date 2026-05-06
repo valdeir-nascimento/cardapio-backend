@@ -27,7 +27,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/menu/**", "/api/v1/operating-hours",
-                    "/api/v1/delivery/neighborhoods", "/api/v1/delivery/fee").permitAll()
+                    "/api/v1/delivery/neighborhoods", "/api/v1/delivery/fee",
+                    "/api/v1/tables/resolve").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/register",
                     "/api/v1/auth/login",
                     "/api/v1/auth/refresh",

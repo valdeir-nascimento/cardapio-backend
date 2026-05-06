@@ -1,0 +1,37 @@
+meta {
+  name: Customer Open Comanda
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/comandas
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "tableId": "{{tableId}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("comandaId", res.body.id);
+  }
+}
+
+docs {
+  Abre uma comanda nova. Falha com `COMANDA_ALREADY_OPEN` se já existe
+  comanda aberta para a mesa — neste caso o cliente faz "join" no id
+  retornado pelo /tables/resolve.
+}

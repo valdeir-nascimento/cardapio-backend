@@ -1,0 +1,21 @@
+meta {
+  name: Customer Resolve Token
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/tables/resolve?token={{qrToken}}
+  body: none
+  auth: none
+}
+
+params:query {
+  token: {{qrToken}}
+}
+
+docs {
+  Endpoint público (sem JWT). Cliente escaneia o QR, front-end chama
+  esta rota com o token e descobre o tableId + se já existe comanda
+  aberta.
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Customer Join Comanda
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/comandas/{{comandaId}}/join
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Cliente entra numa comanda aberta. Idempotente — se já é membro,
+  retorna 200 sem efeito colateral.
+}

@@ -1,0 +1,38 @@
+meta {
+  name: Customer Place Dine-In Order
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+  Idempotency-Key: dinein-{{$randomUUID}}
+}
+
+body:json {
+  {
+    "modality": "DINE_IN",
+    "address": null,
+    "tableId": "{{tableId}}",
+    "comandaId": "{{comandaId}}"
+  }
+}
+
+docs {
+  Lança pedido na modalidade DINE_IN.
+  Pré-requisitos:
+    - cliente tem item no carrinho;
+    - cliente já fez "join" na comanda (caso contrário 422 COMANDA_NOT_MEMBER).
+  Order é criado com status RECEIVED, fee=0, sem endereço, e fica
+  attachado à comanda.
+}

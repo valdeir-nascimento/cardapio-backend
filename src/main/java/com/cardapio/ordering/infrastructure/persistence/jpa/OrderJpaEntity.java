@@ -31,6 +31,9 @@ public class OrderJpaEntity {
     @Column(name = "address_postal_code", length = 16) private String addressPostalCode;
     @Column(name = "address_neighborhood_id") private UUID addressNeighborhoodId;
 
+    @Column(name = "table_id") private UUID tableId;
+    @Column(name = "comanda_id") private UUID comandaId;
+
     @Column(name = "placed_at", nullable = false) private Instant placedAt;
     @Column(name = "updated_at", nullable = false) private Instant updatedAt;
 
@@ -45,6 +48,7 @@ public class OrderJpaEntity {
                           String currency,
                           String addressStreet, String addressNumber, String addressComplement, String addressDistrict,
                           String addressCity, String addressPostalCode, UUID addressNeighborhoodId,
+                          UUID tableId, UUID comandaId,
                           Instant placedAt, Instant updatedAt) {
         this.id = id; this.customerId = customerId; this.modality = modality; this.status = status;
         this.subtotal = subtotal; this.deliveryFee = deliveryFee; this.discount = discount; this.total = total;
@@ -52,6 +56,7 @@ public class OrderJpaEntity {
         this.addressStreet = addressStreet; this.addressNumber = addressNumber; this.addressComplement = addressComplement;
         this.addressDistrict = addressDistrict; this.addressCity = addressCity;
         this.addressPostalCode = addressPostalCode; this.addressNeighborhoodId = addressNeighborhoodId;
+        this.tableId = tableId; this.comandaId = comandaId;
         this.placedAt = placedAt; this.updatedAt = updatedAt;
     }
 
@@ -71,6 +76,8 @@ public class OrderJpaEntity {
     public String getAddressCity() { return addressCity; }
     public String getAddressPostalCode() { return addressPostalCode; }
     public UUID getAddressNeighborhoodId() { return addressNeighborhoodId; }
+    public UUID getTableId() { return tableId; }
+    public UUID getComandaId() { return comandaId; }
     public Instant getPlacedAt() { return placedAt; }
     public Instant getUpdatedAt() { return updatedAt; }
     public List<OrderItemJpaEntity> getItems() { return items; }
