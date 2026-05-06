@@ -39,6 +39,7 @@ class OrderStatusTest {
     void terminalStatesAreTerminal() {
         assertThat(OrderStatus.DELIVERED.isTerminal()).isTrue();
         assertThat(OrderStatus.PICKED_UP.isTerminal()).isTrue();
+        assertThat(OrderStatus.SERVED.isTerminal()).isTrue();
         assertThat(OrderStatus.CANCELED.isTerminal()).isTrue();
         assertThat(OrderStatus.RECEIVED.isTerminal()).isFalse();
         assertThat(OrderStatus.PREPARING.isTerminal()).isFalse();
@@ -46,11 +47,33 @@ class OrderStatusTest {
 
     @Test
     void terminalStatesAllowNoTransitions() {
-        for (OrderStatus s : new OrderStatus[]{OrderStatus.DELIVERED, OrderStatus.PICKED_UP, OrderStatus.CANCELED}) {
+        for (OrderStatus s : new OrderStatus[]{OrderStatus.DELIVERED, OrderStatus.PICKED_UP, OrderStatus.SERVED, OrderStatus.CANCELED}) {
             for (OrderStatus target : OrderStatus.values()) {
                 assertThat(s.canTransitionTo(target, OrderModality.DELIVERY)).isFalse();
                 assertThat(s.canTransitionTo(target, OrderModality.PICKUP)).isFalse();
+                assertThat(s.canTransitionTo(target, OrderModality.DINE_IN)).isFalse();
             }
         }
+    }
+
+    @Test
+    void dineInHappyPathTransitions() {
+        assertThat(OrderStatus.RECEIVED.canTransitionTo(OrderStatus.CONFIRMED, OrderModality.DINE_IN)).isTrue();
+        assertThat(OrderStatus.CONFIRMED.canTransitionTo(OrderStatus.PREPARING, OrderModality.DINE_IN)).isTrue();
+        assertThat(OrderStatus.PREPARING.canTransitionTo(OrderStatus.SERVED, OrderModality.DINE_IN)).isTrue();
+    }
+
+    @Test
+    void dineInRejectsDeliveryAndPickupTerminals() {
+        assertThat(OrderStatus.PREPARING.canTransitionTo(OrderStatus.READY, OrderModality.DINE_IN)).isFalse();
+        assertThat(OrderStatus.PREPARING.canTransitionTo(OrderStatus.DELIVERED, OrderModality.DINE_IN)).isFalse();
+        assertThat(OrderStatus.PREPARING.canTransitionTo(OrderStatus.PICKED_UP, OrderModality.DINE_IN)).isFalse();
+    }
+
+    @Test
+    void dineInCancelOnlyFromEarlyStates() {
+        assertThat(OrderStatus.RECEIVED.canTransitionTo(OrderStatus.CANCELED, OrderModality.DINE_IN)).isTrue();
+        assertThat(OrderStatus.CONFIRMED.canTransitionTo(OrderStatus.CANCELED, OrderModality.DINE_IN)).isTrue();
+        assertThat(OrderStatus.PREPARING.canTransitionTo(OrderStatus.CANCELED, OrderModality.DINE_IN)).isFalse();
     }
 }
