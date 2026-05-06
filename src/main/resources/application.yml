@@ -23,10 +23,33 @@ mercadopago:
   webhook-secret: ${MP_WEBHOOK_SECRET:test-webhook-secret}
   notification-url: ${MP_NOTIFICATION_URL:http://localhost:8080/api/v1/webhooks/mercado-pago}
 
+resend:
+  enabled: ${RESEND_ENABLED:false}
+  api-key: ${RESEND_API_KEY:test-key}
+  from: ${RESEND_FROM:no-reply@cardapio.local}
+  base-url: ${RESEND_BASE_URL:https://api.resend.com}
+
+zapi:
+  enabled: ${ZAPI_ENABLED:false}
+  instance-id: ${ZAPI_INSTANCE:dummy}
+  token: ${ZAPI_TOKEN:dummy}
+  client-token: ${ZAPI_CLIENT_TOKEN:dummy}
+  base-url: ${ZAPI_BASE_URL:https://api.z-api.io}
+
+notification:
+  dispatch:
+    enabled: ${NOTIFICATION_DISPATCH_ENABLED:true}
+    fixed-delay-ms: ${NOTIFICATION_DISPATCH_FIXED_DELAY_MS:30000}
+    initial-delay-ms: ${NOTIFICATION_DISPATCH_INITIAL_DELAY_MS:10000}
+
 resilience4j:
   timelimiter:
     instances:
       mercadopago:
+        timeout-duration: 5s
+      resend:
+        timeout-duration: 5s
+      zapi:
         timeout-duration: 5s
   retry:
     instances:
@@ -36,9 +59,31 @@ resilience4j:
         exponential-backoff-multiplier: 2
         retry-exceptions:
           - java.io.IOException
+      resend:
+        max-attempts: 3
+        wait-duration: 1s
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - java.io.IOException
+      zapi:
+        max-attempts: 3
+        wait-duration: 1s
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - java.io.IOException
   circuitbreaker:
     instances:
       mercadopago:
+        sliding-window-size: 10
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+      resend:
+        sliding-window-size: 10
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+      zapi:
         sliding-window-size: 10
         minimum-number-of-calls: 10
         failure-rate-threshold: 50
