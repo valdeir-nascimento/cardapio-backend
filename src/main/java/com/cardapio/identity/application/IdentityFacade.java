@@ -10,7 +10,9 @@ import com.cardapio.identity.application.command.UpdateProfileCommand;
 import com.cardapio.identity.application.dto.CustomerProfile;
 import com.cardapio.identity.domain.model.CustomerId;
 import com.cardapio.identity.domain.model.TokenPair;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface("IdentityFacade")
 public interface IdentityFacade {
 
     CustomerId registerCustomer(RegisterCustomerCommand cmd) throws NotificationException;
