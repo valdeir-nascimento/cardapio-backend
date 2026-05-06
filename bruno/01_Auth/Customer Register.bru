@@ -1,0 +1,29 @@
+meta {
+  name: Customer Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Ana Pereira",
+    "email": "ana@example.com",
+    "phoneNumber": "+5511911112222",
+    "password": "Customer@123"
+  }
+}
+
+docs {
+  Cria um novo cliente. Idempotente em re-runs apenas se o e-mail for único; troque o e-mail caso já exista.
+  Retorna 201 com o `id` (UUID) do customer.
+}

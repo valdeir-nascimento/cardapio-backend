@@ -1,0 +1,36 @@
+meta {
+  name: Create Product - Invalid Price (error)
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/products
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Produto Inválido",
+    "description": "preço negativo",
+    "basePrice": -1.00,
+    "categoryId": "{{categoryId}}",
+    "imageUrl": null,
+    "allowsHalfHalf": false,
+    "variations": [],
+    "addOnGroups": []
+  }
+}
+
+docs {
+  Esperado: 422 com code `INVALID_PRICE`.
+}

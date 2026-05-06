@@ -1,0 +1,25 @@
+meta {
+  name: Refresh Token - Revoked (error)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/refresh
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "refreshToken": "00000000-0000-0000-0000-000000000000"
+  }
+}
+
+docs {
+  Esperado: 401 — refresh token inválido/revogado.
+}

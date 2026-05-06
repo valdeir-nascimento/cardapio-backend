@@ -1,0 +1,36 @@
+docs {
+  # Cardápio Backend — Bruno Collection
+
+  Collection completa dos endpoints REST do `cardapio-backend`, organizada por feature.
+
+  ## Como usar
+
+  1. Selecione o environment **Local** (default `http://localhost:8080`).
+  2. Rode `01_Auth/Admin Login (OWNER)` ou `01_Auth/Customer Login` — os tokens são gravados automaticamente em `accessToken` / `refreshToken` da env.
+  3. Rode `03_Public Catalog/Get Menu` antes de operações que dependem de `productId`/`categoryId` (o post-response salva os IDs encontrados).
+  4. As pastas estão numeradas para indicar a ordem natural de exercício.
+
+  ## Credenciais (seed dev)
+  | Tipo    | Email                    | Senha         | Role      |
+  |---------|--------------------------|---------------|-----------|
+  | Admin   | admin@cardapio.local     | Admin@123     | OWNER     |
+  | Admin   | manager@cardapio.local   | Admin@123     | MANAGER   |
+  | Admin   | operator@cardapio.local  | Admin@123     | OPERATOR  |
+  | Cliente | maria@example.com        | Customer@123  | CUSTOMER  |
+  | Cliente | joao@example.com         | Customer@123  | CUSTOMER  |
+
+  ## Convenções
+
+  - Pastas com prefixo numérico → fluxo natural.
+  - Requests `(error)` no nome → cenários negativos esperados (4xx/422).
+  - Toda requisição autenticada usa `Authorization: Bearer {{accessToken}}` com `auth: bearer`.
+  - `POST /api/v1/orders` exige header `Idempotency-Key` — uma 2ª chamada com a mesma key retorna o MESMO pedido (sem duplicar).
+}
+
+auth {
+  mode: none
+}
+
+vars:pre-request {
+  baseUrl: {{baseUrl}}
+}

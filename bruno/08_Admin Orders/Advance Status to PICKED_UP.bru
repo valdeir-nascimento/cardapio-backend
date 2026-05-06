@@ -1,0 +1,29 @@
+meta {
+  name: Advance Status to PICKED_UP
+  type: http
+  seq: 10
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/admin/orders/{{orderId}}/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "PICKED_UP"
+  }
+}
+
+docs {
+  Apenas para modalidade PICKUP — após READY.
+}

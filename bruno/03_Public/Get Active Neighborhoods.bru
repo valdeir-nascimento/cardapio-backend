@@ -1,0 +1,20 @@
+meta {
+  name: Get Active Neighborhoods
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/delivery/neighborhoods
+  auth: none
+}
+
+script:post-response {
+  if (res.status === 200 && Array.isArray(res.body) && res.body.length > 0) {
+    bru.setEnvVar("neighborhoodId", res.body[0].id);
+  }
+}
+
+docs {
+  Lista bairros ativos. Salva `neighborhoodId` do primeiro para uso no checkout.
+}

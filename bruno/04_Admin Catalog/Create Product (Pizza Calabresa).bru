@@ -1,0 +1,62 @@
+meta {
+  name: Create Product (Pizza Calabresa)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/products
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Pizza Calabresa",
+    "description": "Calabresa fatiada, mussarela e cebola.",
+    "basePrice": 49.90,
+    "categoryId": "{{categoryId}}",
+    "imageUrl": "https://cdn.example.com/pizzas/calabresa.jpg",
+    "allowsHalfHalf": true,
+    "variations": [
+      { "name": "Pequena", "priceModifier": 0.00 },
+      { "name": "Média",   "priceModifier": 8.00 },
+      { "name": "Grande",  "priceModifier": 16.00 }
+    ],
+    "addOnGroups": [
+      {
+        "name": "Adicionais",
+        "minSelection": 0,
+        "maxSelection": 4,
+        "items": [
+          { "name": "Bacon",            "price": 4.50 },
+          { "name": "Catupiry",         "price": 6.00 },
+          { "name": "Cebola crocante",  "price": 3.00 }
+        ]
+      },
+      {
+        "name": "Borda recheada",
+        "minSelection": 0,
+        "maxSelection": 1,
+        "items": [
+          { "name": "Borda de catupiry", "price": 8.00 },
+          { "name": "Borda de cheddar",  "price": 7.00 }
+        ]
+      }
+    ]
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("productId", res.body.id);
+  }
+}

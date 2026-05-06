@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Cardápio Backend",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

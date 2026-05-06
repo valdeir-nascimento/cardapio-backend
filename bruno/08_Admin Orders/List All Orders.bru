@@ -1,0 +1,29 @@
+meta {
+  name: List All Orders
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/orders?limit=20&offset=0
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  limit: 20
+  offset: 0
+}
+
+script:post-response {
+  if (res.status === 200 && Array.isArray(res.body) && res.body.length > 0) {
+    bru.setEnvVar("orderId", res.body[0].id);
+  }
+}
+
+docs {
+  Pré-requisito: admin logado (qualquer role admin).
+}

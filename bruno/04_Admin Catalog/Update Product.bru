@@ -1,0 +1,35 @@
+meta {
+  name: Update Product
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{baseUrl}}/api/v1/admin/products/{{productId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Pizza Margherita Especial",
+    "description": "Receita renovada com mussarela de búfala e tomate San Marzano.",
+    "basePrice": 56.90,
+    "categoryId": "{{categoryId}}",
+    "imageUrl": "https://cdn.example.com/pizzas/margherita-v2.jpg",
+    "allowsHalfHalf": true,
+    "variations": [
+      { "name": "Média",  "priceModifier": 0.00 },
+      { "name": "Grande", "priceModifier": 12.00 }
+    ],
+    "addOnGroups": []
+  }
+}
