@@ -14,11 +14,13 @@ import com.cardapio.ordering.application.dto.OrderView;
 import com.cardapio.ordering.application.dto.PlacedOrderView;
 import com.cardapio.ordering.domain.model.OrderId;
 import com.cardapio.ordering.domain.model.OrderStatus;
+import org.springframework.modulith.NamedInterface;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+@NamedInterface("OrderingFacade")
 public interface OrderingFacade {
 
     // Cart

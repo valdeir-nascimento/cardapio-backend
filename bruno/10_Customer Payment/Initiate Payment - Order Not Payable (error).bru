@@ -1,0 +1,30 @@
+meta {
+  name: Initiate Payment - Order Not Payable (error)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}/payment
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "method": "PIX"
+  }
+}
+
+docs {
+  Pré-requisito: pedido em status diferente de RECEIVED (ex: já CONFIRMED ou DELIVERED).
+  Esperado: 422 com code `PAYMENT_ORDER_NOT_PAYABLE`.
+}
