@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: Arial, sans-serif; color:#222;">
+<h2>Não foi possível aprovar o pagamento</h2>
+<p>Olá, <span th:text="${customer.name}">cliente</span>.</p>
+<p>O pagamento do pedido <strong>#<span th:text="${order.shortRef}">XXXX</span></strong> foi recusado.</p>
+<p>Você pode tentar novamente ou usar outro método de pagamento.</p>
+<hr/>
+<small>Cardápio Digital</small>
+</body>
+</html>

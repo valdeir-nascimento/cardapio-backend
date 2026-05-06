@@ -18,3 +18,22 @@ cardapio:
       secret: test-secret-must-be-long-enough-for-hs256-32bytes!!
       access-token-ttl: 15m
       refresh-token-ttl: 30d
+
+resend:
+  enabled: false
+  api-key: test
+  from: test@cardapio.local
+  base-url: https://api.resend.com
+
+zapi:
+  enabled: false
+  instance-id: test
+  token: test
+  client-token: test
+  base-url: https://api.z-api.io
+
+notification:
+  dispatch:
+    enabled: false
+    fixed-delay-ms: 60000
+    initial-delay-ms: 60000

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: Arial, sans-serif; color:#222;">
+<h2>Olá, <span th:text="${customer.name}">cliente</span>!</h2>
+<p>Recebemos seu pedido <strong>#<span th:text="${order.shortRef}">XXXX</span></strong>.</p>
+<p>Modalidade: <span th:text="${order.modality}">DELIVERY</span></p>
+<p>Total: <strong>R$ <span th:text="${order.total}">0,00</span></strong></p>
+<p>Estamos aguardando a confirmação do pagamento para iniciar o preparo.</p>
+<hr/>
+<small>Cardápio Digital</small>
+</body>
+</html>

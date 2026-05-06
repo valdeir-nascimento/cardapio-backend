@@ -1,0 +1,27 @@
+meta {
+  name: Customer Order Status Stream
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}/status/stream
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Accept: text/event-stream
+}
+
+docs {
+  SSE stream do status do próprio pedido. Apenas o cliente dono recebe — outro JWT
+  recebe 403 (AccessDeniedException). Eventos:
+  - `connected`
+  - `order-status-changed`
+  - `order-canceled`
+  - `ping` heartbeat
+}

@@ -1,0 +1,1 @@
+Pedido *#[(${order.shortRef})]* mudou para *[(${order.status})]*.
