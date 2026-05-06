@@ -1,0 +1,1 @@
+Olá, [(${customer.name})]! Recebemos seu pedido *#[(${order.shortRef})]* ([(${order.modality})]). Total: R$ [(${order.total})]. Aguardando confirmação do pagamento.

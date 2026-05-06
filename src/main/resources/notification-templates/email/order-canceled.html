@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: Arial, sans-serif; color:#222;">
+<h2>Olá, <span th:text="${customer.name}">cliente</span></h2>
+<p>Seu pedido <strong>#<span th:text="${order.shortRef}">XXXX</span></strong> foi cancelado.</p>
+<p>Se já houve cobrança, o estorno será processado em até 7 dias úteis.</p>
+<hr/>
+<small>Cardápio Digital</small>
+</body>
+</html>

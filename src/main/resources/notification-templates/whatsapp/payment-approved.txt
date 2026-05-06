@@ -1,0 +1,1 @@
+Pagamento *aprovado* para o pedido *#[(${order.shortRef})]*. Já vamos iniciar o preparo!
