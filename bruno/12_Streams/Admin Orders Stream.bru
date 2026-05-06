@@ -1,0 +1,33 @@
+meta {
+  name: Admin Orders Stream
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/orders/stream
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+headers {
+  Accept: text/event-stream
+}
+
+docs {
+  SSE stream de eventos de pedidos para o painel admin. Emite:
+  - `connected`     no handshake inicial
+  - `new-order`     quando OrderPlaced é publicado
+  - `order-status-changed` em cada transição
+  - `order-canceled`
+  - `payment-approved` / `payment-rejected`
+  - `ping`          heartbeat a cada 25s
+
+  Como testar via curl:
+    curl --no-buffer -H "Accept: text/event-stream" \\
+         -H "Authorization: Bearer $TOKEN" \\
+         http://localhost:8080/api/v1/admin/orders/stream
+}
