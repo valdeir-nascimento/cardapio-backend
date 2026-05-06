@@ -23,6 +23,10 @@ body:json {
   }
 }
 
+vars:pre-request {
+  baseUrl: http://localhost:8080
+}
+
 docs {
   Cria um novo cliente. Idempotente em re-runs apenas se o e-mail for único; troque o e-mail caso já exista.
   Retorna 201 com o `id` (UUID) do customer.

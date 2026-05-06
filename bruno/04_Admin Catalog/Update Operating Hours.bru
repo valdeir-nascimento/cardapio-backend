@@ -10,24 +10,79 @@ put {
   auth: bearer
 }
 
-auth:bearer {
-  token: {{accessToken}}
-}
-
 headers {
   Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{accessToken}}
 }
 
 body:json {
   {
     "hoursByDay": {
-      "MONDAY":    [{"openTime":"11:00","closeTime":"15:00"},{"openTime":"18:00","closeTime":"23:00"}],
-      "TUESDAY":   [{"openTime":"11:00","closeTime":"15:00"},{"openTime":"18:00","closeTime":"23:00"}],
-      "WEDNESDAY": [{"openTime":"11:00","closeTime":"15:00"},{"openTime":"18:00","closeTime":"23:00"}],
-      "THURSDAY":  [{"openTime":"11:00","closeTime":"15:00"},{"openTime":"18:00","closeTime":"23:00"}],
-      "FRIDAY":    [{"openTime":"11:00","closeTime":"15:00"},{"openTime":"18:00","closeTime":"23:30"}],
-      "SATURDAY":  [{"openTime":"11:00","closeTime":"23:30"}],
-      "SUNDAY":    [{"openTime":"17:00","closeTime":"22:00"}]
+      "MONDAY": [
+        {
+          "openTime": "11:00",
+          "closeTime": "15:00"
+        },
+        {
+          "openTime": "18:00",
+          "closeTime": "23:00"
+        }
+      ],
+      "TUESDAY": [
+        {
+          "openTime": "11:00",
+          "closeTime": "15:00"
+        },
+        {
+          "openTime": "18:00",
+          "closeTime": "23:00"
+        }
+      ],
+      "WEDNESDAY": [
+        {
+          "openTime": "11:00",
+          "closeTime": "15:00"
+        },
+        {
+          "openTime": "18:00",
+          "closeTime": "23:00"
+        }
+      ],
+      "THURSDAY": [
+        {
+          "openTime": "11:00",
+          "closeTime": "15:00"
+        },
+        {
+          "openTime": "18:00",
+          "closeTime": "23:00"
+        }
+      ],
+      "FRIDAY": [
+        {
+          "openTime": "11:00",
+          "closeTime": "15:00"
+        },
+        {
+          "openTime": "18:00",
+          "closeTime": "23:30"
+        }
+      ],
+      "SATURDAY": [
+        {
+          "openTime": "11:00",
+          "closeTime": "23:30"
+        }
+      ],
+      "SUNDAY": [
+        {
+          "openTime": "17:00",
+          "closeTime": "22:00"
+        }
+      ]
     }
   }
 }

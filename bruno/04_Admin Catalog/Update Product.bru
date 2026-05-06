@@ -10,12 +10,12 @@ put {
   auth: bearer
 }
 
-auth:bearer {
-  token: {{accessToken}}
-}
-
 headers {
   Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{accessToken}}
 }
 
 body:json {
@@ -27,8 +27,14 @@ body:json {
     "imageUrl": "https://cdn.example.com/pizzas/margherita-v2.jpg",
     "allowsHalfHalf": true,
     "variations": [
-      { "name": "Média",  "priceModifier": 0.00 },
-      { "name": "Grande", "priceModifier": 12.00 }
+      {
+        "name": "Média",
+        "priceModifier": 0.00
+      },
+      {
+        "name": "Grande",
+        "priceModifier": 12.00
+      }
     ],
     "addOnGroups": []
   }

@@ -10,12 +10,12 @@ post {
   auth: bearer
 }
 
-auth:bearer {
-  token: {{accessToken}}
-}
-
 headers {
   Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{accessToken}}
 }
 
 body:json {
@@ -27,9 +27,18 @@ body:json {
     "imageUrl": "https://cdn.example.com/pizzas/calabresa.jpg",
     "allowsHalfHalf": true,
     "variations": [
-      { "name": "Pequena", "priceModifier": 0.00 },
-      { "name": "Média",   "priceModifier": 8.00 },
-      { "name": "Grande",  "priceModifier": 16.00 }
+      {
+        "name": "Pequena",
+        "priceModifier": 0.00
+      },
+      {
+        "name": "Média",
+        "priceModifier": 8.00
+      },
+      {
+        "name": "Grande",
+        "priceModifier": 16.00
+      }
     ],
     "addOnGroups": [
       {
@@ -37,9 +46,18 @@ body:json {
         "minSelection": 0,
         "maxSelection": 4,
         "items": [
-          { "name": "Bacon",            "price": 4.50 },
-          { "name": "Catupiry",         "price": 6.00 },
-          { "name": "Cebola crocante",  "price": 3.00 }
+          {
+            "name": "Bacon",
+            "price": 4.50
+          },
+          {
+            "name": "Catupiry",
+            "price": 6.00
+          },
+          {
+            "name": "Cebola crocante",
+            "price": 3.00
+          }
         ]
       },
       {
@@ -47,8 +65,14 @@ body:json {
         "minSelection": 0,
         "maxSelection": 1,
         "items": [
-          { "name": "Borda de catupiry", "price": 8.00 },
-          { "name": "Borda de cheddar",  "price": 7.00 }
+          {
+            "name": "Borda de catupiry",
+            "price": 8.00
+          },
+          {
+            "name": "Borda de cheddar",
+            "price": 7.00
+          }
         ]
       }
     ]
