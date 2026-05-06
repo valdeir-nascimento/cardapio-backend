@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: Arial, sans-serif; color:#222;">
+<h2>Olá, <span th:text="${customer.name}">cliente</span>!</h2>
+<p>Seu pedido <strong>#<span th:text="${order.shortRef}">XXXX</span></strong> mudou de status:</p>
+<p>De <em th:text="${order.previousStatus}">RECEIVED</em>
+   para <strong th:text="${order.status}">CONFIRMED</strong>.</p>
+<hr/>
+<small>Cardápio Digital</small>
+</body>
+</html>

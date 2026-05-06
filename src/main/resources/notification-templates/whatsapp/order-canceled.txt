@@ -1,0 +1,1 @@
+Seu pedido *#[(${order.shortRef})]* foi cancelado.

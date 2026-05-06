@@ -58,6 +58,17 @@ com.cardapio
 
 Próximas fases adicionarão `identity`, `catalog`, `delivery`, `ordering`, `payment`, `notification`, `promotion`, `review`.
 
+## Variáveis de ambiente externas
+
+Padrão dev usa defaults inofensivos; em staging/prod, exporte:
+
+| Variável | Função |
+|---|---|
+| `MP_ENABLED` / `MP_ACCESS_TOKEN` / `MP_WEBHOOK_SECRET` | Gateway Mercado Pago (Phase 3) |
+| `RESEND_ENABLED` / `RESEND_API_KEY` / `RESEND_FROM` | E-mail via Resend (Phase 4) |
+| `ZAPI_ENABLED` / `ZAPI_INSTANCE` / `ZAPI_TOKEN` / `ZAPI_CLIENT_TOKEN` | WhatsApp via Z-API (Phase 4) |
+| `NOTIFICATION_DISPATCH_ENABLED` | Habilita o worker que drena o outbox de notificações (default `true`) |
+
 ## Convenções
 
 - **Domínio puro:** `*.domain.*` não pode importar Spring/JPA (verificado por ArchUnit)
