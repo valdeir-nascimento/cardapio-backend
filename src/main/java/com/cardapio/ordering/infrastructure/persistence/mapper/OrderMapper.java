@@ -1,5 +1,6 @@
 package com.cardapio.ordering.infrastructure.persistence.mapper;
 
+import com.cardapio.ordering.domain.model.ComandaId;
 import com.cardapio.ordering.domain.model.DeliveryAddress;
 import com.cardapio.ordering.domain.model.HalfAndHalf;
 import com.cardapio.ordering.domain.model.Observation;
@@ -11,6 +12,7 @@ import com.cardapio.ordering.domain.model.OrderModality;
 import com.cardapio.ordering.domain.model.OrderStatus;
 import com.cardapio.ordering.domain.model.SelectedAddOn;
 import com.cardapio.ordering.domain.model.SelectedVariation;
+import com.cardapio.ordering.domain.model.TableId;
 import com.cardapio.ordering.infrastructure.persistence.jpa.OrderItemAddOnJpaEntity;
 import com.cardapio.ordering.infrastructure.persistence.jpa.OrderItemJpaEntity;
 import com.cardapio.ordering.infrastructure.persistence.jpa.OrderJpaEntity;
@@ -44,6 +46,8 @@ public final class OrderMapper {
             address.map(DeliveryAddress::city).orElse(null),
             address.map(DeliveryAddress::postalCode).orElse(null),
             address.map(DeliveryAddress::neighborhoodId).orElse(null),
+            order.tableId().map(TableId::value).orElse(null),
+            order.comandaId().map(ComandaId::value).orElse(null),
             order.placedAt(),
             order.updatedAt()
         );
@@ -98,6 +102,9 @@ public final class OrderMapper {
 
         List<OrderItem> items = e.getItems().stream().map(OrderMapper::toDomainItem).toList();
 
+        Optional<TableId> tableId = e.getTableId() == null ? Optional.empty() : Optional.of(TableId.of(e.getTableId()));
+        Optional<ComandaId> comandaId = e.getComandaId() == null ? Optional.empty() : Optional.of(ComandaId.of(e.getComandaId()));
+
         return Order.rehydrate(
             OrderId.of(e.getId()),
             e.getCustomerId(),
@@ -109,6 +116,8 @@ public final class OrderMapper {
             Money.of(e.getDiscount(), currency),
             Money.of(e.getTotal(), currency),
             address,
+            tableId,
+            comandaId,
             e.getPlacedAt(),
             e.getUpdatedAt()
         );
