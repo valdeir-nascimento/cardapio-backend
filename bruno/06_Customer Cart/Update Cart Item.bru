@@ -1,0 +1,30 @@
+meta {
+  name: Update Cart Item
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{baseUrl}}/api/v1/cart/items/{{cartItemId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "quantity": 5,
+    "observation": "atualizado: bem assada"
+  }
+}
+
+docs {
+  Apenas `quantity` e `observation` são editáveis. Para alterar variação/addons, remova e adicione o item novamente.
+}

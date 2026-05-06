@@ -1,0 +1,19 @@
+meta {
+  name: Cancel Order (OWNER/MANAGER)
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/orders/{{orderId}}/cancel
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Apenas roles OWNER/MANAGER (OPERATOR não pode cancelar — recebe 403).
+  Cancelamento só é válido em status RECEIVED ou CONFIRMED. Após PREPARING, retorna 422.
+}

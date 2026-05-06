@@ -1,0 +1,35 @@
+meta {
+  name: Add Item Half-and-Half
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/cart/items
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "productId": "{{productId}}",
+    "halfLeftProductId": "{{productId}}",
+    "halfRightProductId": "00000000-0000-0000-0000-000000000000",
+    "addOns": [],
+    "observation": "metade calabresa, metade margherita",
+    "quantity": 1
+  }
+}
+
+docs {
+  AJUSTE `halfRightProductId` para um productId real (a 2ª pizza). O produto base precisa ter `allowsHalfHalf: true`.
+  O preço congelado usa o BASE PRICE MAIOR dos dois lados.
+}

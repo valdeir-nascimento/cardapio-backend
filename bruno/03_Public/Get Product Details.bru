@@ -1,0 +1,27 @@
+meta {
+  name: Get Product Details
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/menu/products/{{productId}}
+  auth: none
+}
+
+script:post-response {
+  if (res.status === 200) {
+    const variations = res.body.variations || [];
+    if (variations.length > 0 && variations[0].id) bru.setEnvVar("variationId", variations[0].id);
+    const groups = res.body.addOnGroups || [];
+    if (groups.length > 0) {
+      bru.setEnvVar("addOnGroupId", groups[0].id);
+      const items = groups[0].items || [];
+      if (items.length > 0) bru.setEnvVar("addOnItemId", items[0].id);
+    }
+  }
+}
+
+docs {
+  Salva `variationId`, `addOnGroupId` e `addOnItemId` da primeira opção, úteis nos requests de carrinho.
+}

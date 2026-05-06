@@ -1,0 +1,23 @@
+meta {
+  name: Filter Orders by Date Range
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/orders?from=2026-05-01T00:00:00Z&to=2026-05-31T23:59:59Z
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  from: 2026-05-01T00:00:00Z
+  to: 2026-05-31T23:59:59Z
+}
+
+docs {
+  Filtra por janela de `placedAt`. Use ISO-8601 com `Z`.
+}

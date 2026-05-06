@@ -1,0 +1,29 @@
+meta {
+  name: Advance Status to DELIVERED
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/admin/orders/{{orderId}}/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "DELIVERED"
+  }
+}
+
+docs {
+  Estado terminal — após isso, qualquer transição falha com 422.
+}

@@ -1,0 +1,28 @@
+meta {
+  name: Create Neighborhood (Barra)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/neighborhoods
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Barra",
+    "city": "Salvador",
+    "fee": 12.00,
+    "active": true
+  }
+}

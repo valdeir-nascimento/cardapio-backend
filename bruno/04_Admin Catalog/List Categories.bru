@@ -1,0 +1,20 @@
+meta {
+  name: List Categories
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/categories
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:post-response {
+  if (res.status === 200 && Array.isArray(res.body) && res.body.length > 0) {
+    bru.setEnvVar("categoryId", res.body[0].id);
+  }
+}

@@ -1,0 +1,19 @@
+meta {
+  name: Get Cart
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/cart
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Retorna o carrinho atual com `lineTotal` re-calculado contra preços atuais do catálogo.
+  Se o cliente nunca tiver adicionado item, retorna um carrinho vazio (não 404).
+}

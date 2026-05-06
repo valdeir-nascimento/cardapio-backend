@@ -1,0 +1,32 @@
+meta {
+  name: Create Category - Operator Forbidden (error)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/categories
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Tentativa OPERATOR",
+    "displayOrder": 99,
+    "active": true
+  }
+}
+
+docs {
+  Pré-requisito: rodar `01_Auth/Admin Login (OPERATOR)`.
+  Esperado: 403 — somente OWNER/MANAGER podem criar categorias.
+}

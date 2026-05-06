@@ -1,0 +1,38 @@
+meta {
+  name: Add Item Simple (no variation, no addons)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/cart/items
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "productId": "{{productId}}",
+    "quantity": 2,
+    "observation": "sem azeitona, por favor",
+    "addOns": []
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("cartItemId", res.body.id);
+  }
+}
+
+docs {
+  Pré-requisito: rodar `03_Public/Get Menu` para preencher `productId`.
+}

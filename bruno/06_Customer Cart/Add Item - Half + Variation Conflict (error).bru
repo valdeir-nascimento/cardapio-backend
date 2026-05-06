@@ -1,0 +1,36 @@
+meta {
+  name: Add Item - Half + Variation Conflict (error)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/cart/items
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "productId": "{{productId}}",
+    "variationId": "{{variationId}}",
+    "halfLeftProductId": "{{productId}}",
+    "halfRightProductId": "{{productId}}",
+    "addOns": [],
+    "observation": "",
+    "quantity": 1
+  }
+}
+
+docs {
+  Esperado: 422 com code `HALF_AND_HALF_INCOMPATIBLE_WITH_VARIATION`.
+  Meio-a-meio é mutuamente exclusivo com variação.
+}

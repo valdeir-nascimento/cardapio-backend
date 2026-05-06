@@ -1,0 +1,31 @@
+meta {
+  name: Update Operating Hours - Invalid Range (error)
+  type: http
+  seq: 16
+}
+
+put {
+  url: {{baseUrl}}/api/v1/admin/operating-hours
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "hoursByDay": {
+      "MONDAY": [{"openTime":"22:00","closeTime":"08:00"}]
+    }
+  }
+}
+
+docs {
+  Esperado: 422 — close < open ⇒ `INVALID_HOURS`.
+}

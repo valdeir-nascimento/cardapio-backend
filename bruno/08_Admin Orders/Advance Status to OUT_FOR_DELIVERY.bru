@@ -1,0 +1,29 @@
+meta {
+  name: Advance Status to OUT_FOR_DELIVERY
+  type: http
+  seq: 8
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/admin/orders/{{orderId}}/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "OUT_FOR_DELIVERY"
+  }
+}
+
+docs {
+  Apenas para modalidade DELIVERY. PICKUP usa PICKED_UP no lugar.
+}

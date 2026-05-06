@@ -1,0 +1,32 @@
+meta {
+  name: Create Neighborhood - Invalid Fee (error)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/neighborhoods
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Bairro Inválido",
+    "city": "Salvador",
+    "fee": -1.00,
+    "active": true
+  }
+}
+
+docs {
+  Esperado: 400/422 — fee negativo é rejeitado por bean validation + domínio.
+}

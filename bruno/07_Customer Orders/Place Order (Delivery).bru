@@ -1,0 +1,52 @@
+meta {
+  name: Place Order (Delivery)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+  Idempotency-Key: order-{{$randomUUID}}
+}
+
+body:json {
+  {
+    "modality": "DELIVERY",
+    "address": {
+      "street": "Av. Tancredo Neves",
+      "number": "1500",
+      "complement": "ap 1203",
+      "district": "Pituba",
+      "city": "Salvador",
+      "postalCode": "41820-021",
+      "neighborhoodId": "{{neighborhoodId}}"
+    }
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("orderId", res.body.id);
+  }
+}
+
+docs {
+  Pré-requisitos:
+  1. Carrinho com itens (`06_Customer Cart/Add Item *`).
+  2. Bairro válido salvo em `neighborhoodId` (`03_Public/Get Active Neighborhoods`).
+
+  Header `Idempotency-Key` é OBRIGATÓRIO. `{{$randomUUID}}` gera um UUID a cada execução; troque para uma string fixa para testar idempotência.
+
+  Após sucesso, o carrinho do cliente fica vazio. Status inicial: RECEIVED.
+  Total = sum(lineTotal) + delivery_fee.
+}

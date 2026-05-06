@@ -1,0 +1,25 @@
+meta {
+  name: Advance Status to PREPARING
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/admin/orders/{{orderId}}/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "PREPARING"
+  }
+}

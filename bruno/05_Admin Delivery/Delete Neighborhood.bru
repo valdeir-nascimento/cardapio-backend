@@ -1,0 +1,14 @@
+meta {
+  name: Delete Neighborhood
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/admin/neighborhoods/{{neighborhoodId}}
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

@@ -1,0 +1,28 @@
+meta {
+  name: Customer Register - Duplicate Email (error)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Maria Silva",
+    "email": "{{customerEmail}}",
+    "phoneNumber": "+5511933334444",
+    "password": "Customer@123"
+  }
+}
+
+docs {
+  Esperado: 422 com code `EMAIL_ALREADY_REGISTERED`.
+}
