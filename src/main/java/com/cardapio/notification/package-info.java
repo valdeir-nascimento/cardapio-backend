@@ -12,7 +12,8 @@
         "identity::dto",
         "identity::ids",
         "identity::security",
-        "payment::events"
+        "payment::events",
+        "payment::ids"
     }
 )
 package com.cardapio.notification;
