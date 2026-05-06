@@ -1,5 +1,6 @@
 package com.cardapio.ordering.domain.model;
 
+import com.cardapio.ordering.domain.exception.DineInInvariantException;
 import com.cardapio.ordering.domain.exception.IllegalStatusTransitionException;
 import com.cardapio.shared.domain.Money;
 import org.junit.jupiter.api.Test;
@@ -126,5 +127,82 @@ class OrderTest {
             Optional.empty(), Observation.empty(), 2);
         // (30 + 10 + (3.50*2)) * 2 = 47 * 2 = 94
         assertThat(item.lineTotal().amount()).isEqualByComparingTo("94.00");
+    }
+
+    @Test
+    void placeDineInRequiresTableAndComanda() {
+        assertThatThrownBy(() -> Order.place(customer, OrderModality.DINE_IN,
+            List.of(simpleItem(1, "10")), Money.zeroBrl(), Optional.empty(),
+            Optional.empty(), Optional.empty(), clock))
+            .isInstanceOf(DineInInvariantException.class);
+
+        assertThatThrownBy(() -> Order.place(customer, OrderModality.DINE_IN,
+            List.of(simpleItem(1, "10")), Money.zeroBrl(), Optional.empty(),
+            Optional.of(TableId.newId()), Optional.empty(), clock))
+            .isInstanceOf(DineInInvariantException.class);
+
+        assertThatThrownBy(() -> Order.place(customer, OrderModality.DINE_IN,
+            List.of(simpleItem(1, "10")), Money.zeroBrl(), Optional.empty(),
+            Optional.empty(), Optional.of(ComandaId.newId()), clock))
+            .isInstanceOf(DineInInvariantException.class);
+    }
+
+    @Test
+    void placeDineInRejectsAddress() {
+        assertThatThrownBy(() -> Order.place(customer, OrderModality.DINE_IN,
+            List.of(simpleItem(1, "10")), Money.zeroBrl(), Optional.of(someAddress()),
+            Optional.of(TableId.newId()), Optional.of(ComandaId.newId()), clock))
+            .isInstanceOf(DineInInvariantException.class);
+    }
+
+    @Test
+    void placeDineInRejectsPositiveFee() {
+        assertThatThrownBy(() -> Order.place(customer, OrderModality.DINE_IN,
+            List.of(simpleItem(1, "10")), Money.brl("5.00"), Optional.empty(),
+            Optional.of(TableId.newId()), Optional.of(ComandaId.newId()), clock))
+            .isInstanceOf(DineInInvariantException.class);
+    }
+
+    @Test
+    void placeDineInHappyPath() {
+        TableId table = TableId.newId();
+        ComandaId comanda = ComandaId.newId();
+        Order o = Order.place(customer, OrderModality.DINE_IN,
+            List.of(simpleItem(2, "15.00")), Money.zeroBrl(), Optional.empty(),
+            Optional.of(table), Optional.of(comanda), clock);
+
+        assertThat(o.modality()).isEqualTo(OrderModality.DINE_IN);
+        assertThat(o.tableId()).contains(table);
+        assertThat(o.comandaId()).contains(comanda);
+        assertThat(o.address()).isEmpty();
+        assertThat(o.deliveryFee().amount().signum()).isZero();
+        assertThat(o.total().amount()).isEqualByComparingTo("30.00");
+    }
+
+    @Test
+    void placeDeliveryRejectsTableOrComanda() {
+        assertThatThrownBy(() -> Order.place(customer, OrderModality.DELIVERY,
+            List.of(simpleItem(1, "10")), Money.brl("5"), Optional.of(someAddress()),
+            Optional.of(TableId.newId()), Optional.empty(), clock))
+            .isInstanceOf(DineInInvariantException.class);
+    }
+
+    @Test
+    void placePickupRejectsTableOrComanda() {
+        assertThatThrownBy(() -> Order.place(customer, OrderModality.PICKUP,
+            List.of(simpleItem(1, "10")), Money.zeroBrl(), Optional.empty(),
+            Optional.empty(), Optional.of(ComandaId.newId()), clock))
+            .isInstanceOf(DineInInvariantException.class);
+    }
+
+    @Test
+    void dineInWorkflowToServed() {
+        Order o = Order.place(customer, OrderModality.DINE_IN,
+            List.of(simpleItem(1, "10")), Money.zeroBrl(), Optional.empty(),
+            Optional.of(TableId.newId()), Optional.of(ComandaId.newId()), clock);
+        o.advance(OrderStatus.CONFIRMED, clock);
+        o.advance(OrderStatus.PREPARING, clock);
+        o.advance(OrderStatus.SERVED, clock);
+        assertThat(o.status()).isEqualTo(OrderStatus.SERVED);
     }
 }

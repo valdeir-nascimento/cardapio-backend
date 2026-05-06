@@ -1,5 +1,6 @@
 package com.cardapio.ordering.domain.model;
 
+import com.cardapio.ordering.domain.exception.DineInInvariantException;
 import com.cardapio.ordering.domain.exception.IllegalStatusTransitionException;
 import com.cardapio.shared.domain.AggregateRoot;
 import com.cardapio.shared.domain.Money;
@@ -24,12 +25,15 @@ public final class Order extends AggregateRoot<OrderId> {
     private final Money discount;
     private final Money total;
     private final DeliveryAddress address;
+    private final TableId tableId;
+    private final ComandaId comandaId;
     private final Instant placedAt;
     private Instant updatedAt;
 
     private Order(OrderId id, UUID customerId, OrderModality modality, OrderStatus status,
                   List<OrderItem> items, Money subtotal, Money deliveryFee, Money discount, Money total,
-                  Optional<DeliveryAddress> address, Instant placedAt, Instant updatedAt) {
+                  Optional<DeliveryAddress> address, Optional<TableId> tableId, Optional<ComandaId> comandaId,
+                  Instant placedAt, Instant updatedAt) {
         super(id);
         this.customerId = Objects.requireNonNull(customerId, "customerId");
         this.modality = Objects.requireNonNull(modality, "modality");
@@ -40,12 +44,39 @@ public final class Order extends AggregateRoot<OrderId> {
         this.discount = Objects.requireNonNull(discount, "discount");
         this.total = Objects.requireNonNull(total, "total");
         this.address = address.orElse(null);
+        this.tableId = tableId.orElse(null);
+        this.comandaId = comandaId.orElse(null);
         this.placedAt = Objects.requireNonNull(placedAt, "placedAt");
         this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt");
+        enforceModalityInvariants();
+    }
+
+    private void enforceModalityInvariants() {
+        if (modality == OrderModality.DINE_IN) {
+            if (tableId == null || comandaId == null) {
+                throw new DineInInvariantException("DINE_IN order requires tableId and comandaId");
+            }
+            if (address != null) {
+                throw new DineInInvariantException("DINE_IN order must not have a delivery address");
+            }
+            if (deliveryFee.amount().signum() != 0) {
+                throw new DineInInvariantException("DINE_IN order must have zero delivery fee");
+            }
+        } else {
+            if (tableId != null || comandaId != null) {
+                throw new DineInInvariantException("only DINE_IN orders may carry tableId/comandaId");
+            }
+        }
     }
 
     public static Order place(UUID customerId, OrderModality modality, List<OrderItem> items,
                               Money deliveryFee, Optional<DeliveryAddress> address, Clock clock) {
+        return place(customerId, modality, items, deliveryFee, address, Optional.empty(), Optional.empty(), clock);
+    }
+
+    public static Order place(UUID customerId, OrderModality modality, List<OrderItem> items,
+                              Money deliveryFee, Optional<DeliveryAddress> address,
+                              Optional<TableId> tableId, Optional<ComandaId> comandaId, Clock clock) {
         if (items.isEmpty()) throw new IllegalArgumentException("order has no items");
         if (modality == OrderModality.DELIVERY && address.isEmpty()) {
             throw new IllegalArgumentException("delivery requires address");
@@ -59,14 +90,22 @@ public final class Order extends AggregateRoot<OrderId> {
         Money total = subtotal.add(deliveryFee);
         Instant now = clock.instant();
         return new Order(OrderId.newId(), customerId, modality, OrderStatus.RECEIVED,
-            items, subtotal, deliveryFee, zero, total, address, now, now);
+            items, subtotal, deliveryFee, zero, total, address, tableId, comandaId, now, now);
     }
 
     public static Order rehydrate(OrderId id, UUID customerId, OrderModality modality, OrderStatus status,
                                   List<OrderItem> items, Money subtotal, Money deliveryFee, Money discount, Money total,
                                   Optional<DeliveryAddress> address, Instant placedAt, Instant updatedAt) {
+        return rehydrate(id, customerId, modality, status, items, subtotal, deliveryFee, discount, total,
+            address, Optional.empty(), Optional.empty(), placedAt, updatedAt);
+    }
+
+    public static Order rehydrate(OrderId id, UUID customerId, OrderModality modality, OrderStatus status,
+                                  List<OrderItem> items, Money subtotal, Money deliveryFee, Money discount, Money total,
+                                  Optional<DeliveryAddress> address, Optional<TableId> tableId, Optional<ComandaId> comandaId,
+                                  Instant placedAt, Instant updatedAt) {
         return new Order(id, customerId, modality, status, items, subtotal, deliveryFee, discount, total,
-            address, placedAt, updatedAt);
+            address, tableId, comandaId, placedAt, updatedAt);
     }
 
     public void advance(OrderStatus next, Clock clock) {
@@ -94,6 +133,8 @@ public final class Order extends AggregateRoot<OrderId> {
     public Money discount() { return discount; }
     public Money total() { return total; }
     public Optional<DeliveryAddress> address() { return Optional.ofNullable(address); }
+    public Optional<TableId> tableId() { return Optional.ofNullable(tableId); }
+    public Optional<ComandaId> comandaId() { return Optional.ofNullable(comandaId); }
     public Instant placedAt() { return placedAt; }
     public Instant updatedAt() { return updatedAt; }
 }
