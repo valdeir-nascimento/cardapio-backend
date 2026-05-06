@@ -2,6 +2,7 @@ package com.cardapio.ordering.application.usecase;
 
 import com.cardapio.ordering.application.dto.CartItemView;
 import com.cardapio.ordering.application.dto.CartView;
+import com.cardapio.ordering.application.dto.CouponPricing;
 import com.cardapio.ordering.domain.model.Cart;
 import com.cardapio.ordering.domain.model.CartItem;
 import com.cardapio.ordering.domain.model.HalfAndHalf;
@@ -10,9 +11,7 @@ import com.cardapio.ordering.domain.model.SelectedVariation;
 import com.cardapio.ordering.domain.port.CartRepository;
 import com.cardapio.ordering.domain.port.CatalogQueryPort;
 import com.cardapio.ordering.domain.port.CatalogQueryPort.ProductSnapshot;
-import com.cardapio.promotion.application.CouponQueryPort;
-import com.cardapio.promotion.domain.dto.CouponEvaluation;
-import com.cardapio.promotion.domain.model.CouponCode;
+import com.cardapio.ordering.domain.port.CouponPricingPort;
 import com.cardapio.shared.domain.Money;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,7 @@ public class GetCartQuery {
 
     private final CartRepository cartRepo;
     private final CatalogQueryPort catalog;
-    private final CouponQueryPort coupons;
+    private final CouponPricingPort coupons;
     private final java.time.Clock clock;
 
     @Transactional(readOnly = true)
@@ -81,13 +80,9 @@ public class GetCartQuery {
         String couponCode = cart.couponCode().orElse(null);
         BigDecimal discount = BigDecimal.ZERO.setScale(currency.getDefaultFractionDigits());
         if (couponCode != null) {
-            try {
-                var evaluation = coupons.evaluate(CouponCode.of(couponCode), Money.of(subtotal, currency));
-                if (evaluation instanceof CouponEvaluation.Applicable applicable) {
-                    discount = applicable.discount().amount();
-                }
-            } catch (IllegalArgumentException ignored) {
-                // malformed code stored on cart — surface as no discount
+            CouponPricing pricing = coupons.evaluate(couponCode, Money.of(subtotal, currency));
+            if (pricing instanceof CouponPricing.Applicable applicable) {
+                discount = applicable.discount().amount();
             }
         }
         BigDecimal discountedTotal = subtotal.subtract(discount);

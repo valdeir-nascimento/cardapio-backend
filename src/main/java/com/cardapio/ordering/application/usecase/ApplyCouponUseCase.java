@@ -1,12 +1,11 @@
 package com.cardapio.ordering.application.usecase;
 
 import com.cardapio.ordering.application.dto.CartView;
+import com.cardapio.ordering.application.dto.CouponPricing;
 import com.cardapio.ordering.domain.model.Cart;
 import com.cardapio.ordering.domain.model.OrderItem;
 import com.cardapio.ordering.domain.port.CartRepository;
-import com.cardapio.promotion.application.CouponQueryPort;
-import com.cardapio.promotion.domain.dto.CouponEvaluation;
-import com.cardapio.promotion.domain.model.CouponCode;
+import com.cardapio.ordering.domain.port.CouponPricingPort;
 import com.cardapio.shared.domain.ErrorCode;
 import com.cardapio.shared.domain.Money;
 import com.cardapio.shared.domain.Result;
@@ -26,17 +25,14 @@ public class ApplyCouponUseCase {
 
     private final CartRepository carts;
     private final CartPricingService pricing;
-    private final CouponQueryPort couponQuery;
+    private final CouponPricingPort couponPricing;
     private final GetCartQuery getCart;
     private final Clock clock;
 
     @Transactional
     public Result<CartView> execute(UUID customerId, String rawCode) {
-        CouponCode code;
-        try {
-            code = CouponCode.of(rawCode);
-        } catch (IllegalArgumentException e) {
-            return Result.failWith(ErrorCode.INVALID_COUPON, e.getMessage());
+        if (rawCode == null || rawCode.isBlank()) {
+            return Result.failWith(ErrorCode.INVALID_COUPON, "code must not be blank");
         }
 
         Cart cart = carts.findByCustomerId(customerId).orElse(null);
@@ -53,25 +49,26 @@ public class ApplyCouponUseCase {
         Money subtotal = items.stream().map(OrderItem::lineTotal)
             .reduce(Money.of(BigDecimal.ZERO, currency), Money::add);
 
-        CouponEvaluation evaluation = couponQuery.evaluate(code, subtotal);
-        Result<Void> mapped = mapEvaluation(evaluation);
+        CouponPricing pricingResult = couponPricing.evaluate(rawCode, subtotal);
+        Result<Void> mapped = mapPricing(pricingResult);
         if (!mapped.isSuccess()) {
             return Result.failure(((Result.Failure<Void>) mapped).notification());
         }
 
-        cart.applyCoupon(code.value(), clock);
+        CouponPricing.Applicable applicable = (CouponPricing.Applicable) pricingResult;
+        cart.applyCoupon(applicable.code(), clock);
         carts.save(cart);
         return Result.success(getCart.getOrEmpty(customerId));
     }
 
-    private Result<Void> mapEvaluation(CouponEvaluation evaluation) {
-        return switch (evaluation) {
-            case CouponEvaluation.Applicable a -> Result.ok();
-            case CouponEvaluation.NotFound nf -> Result.failWith(ErrorCode.COUPON_NOT_FOUND);
-            case CouponEvaluation.Inactive i -> Result.failWith(ErrorCode.COUPON_INACTIVE);
-            case CouponEvaluation.Expired e -> Result.failWith(ErrorCode.COUPON_EXPIRED);
-            case CouponEvaluation.Exhausted ex -> Result.failWith(ErrorCode.COUPON_EXHAUSTED);
-            case CouponEvaluation.BelowMinOrder bm -> Result.failWith(ErrorCode.COUPON_BELOW_MIN_ORDER,
+    static Result<Void> mapPricing(CouponPricing pricing) {
+        return switch (pricing) {
+            case CouponPricing.Applicable a -> Result.ok();
+            case CouponPricing.NotFound nf -> Result.failWith(ErrorCode.COUPON_NOT_FOUND);
+            case CouponPricing.Inactive i -> Result.failWith(ErrorCode.COUPON_INACTIVE);
+            case CouponPricing.Expired e -> Result.failWith(ErrorCode.COUPON_EXPIRED);
+            case CouponPricing.Exhausted ex -> Result.failWith(ErrorCode.COUPON_EXHAUSTED);
+            case CouponPricing.BelowMinOrder bm -> Result.failWith(ErrorCode.COUPON_BELOW_MIN_ORDER,
                 "subtotal %s < minOrder %s".formatted(bm.subtotal().amount(), bm.minOrder().amount()));
         };
     }

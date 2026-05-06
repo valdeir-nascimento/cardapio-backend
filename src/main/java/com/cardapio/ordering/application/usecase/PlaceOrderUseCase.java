@@ -13,14 +13,13 @@ import com.cardapio.ordering.domain.model.Order;
 import com.cardapio.ordering.domain.model.OrderItem;
 import com.cardapio.ordering.domain.model.OrderModality;
 import com.cardapio.ordering.domain.model.TableId;
+import com.cardapio.ordering.application.dto.CouponPricing;
 import com.cardapio.ordering.domain.port.CartRepository;
 import com.cardapio.ordering.domain.port.ComandaRepository;
+import com.cardapio.ordering.domain.port.CouponPricingPort;
 import com.cardapio.ordering.domain.port.DeliveryFeeQueryPort;
 import com.cardapio.ordering.domain.port.IdempotencyKeyStore;
 import com.cardapio.ordering.domain.port.OrderRepository;
-import com.cardapio.promotion.application.CouponQueryPort;
-import com.cardapio.promotion.domain.dto.CouponEvaluation;
-import com.cardapio.promotion.domain.model.CouponCode;
 import com.cardapio.shared.domain.ErrorCode;
 import com.cardapio.shared.domain.Money;
 import com.cardapio.shared.domain.Notification;
@@ -46,7 +45,7 @@ public class PlaceOrderUseCase {
     private final DeliveryFeeQueryPort deliveryFees;
     private final IdempotencyKeyStore idempotency;
     private final ComandaRepository comandas;
-    private final CouponQueryPort couponQuery;
+    private final CouponPricingPort couponPricing;
     private final ApplicationEventPublisher events;
     private final Clock clock;
 
@@ -121,23 +120,16 @@ public class PlaceOrderUseCase {
         Money discount = Money.of(BigDecimal.ZERO, currency);
         Optional<String> appliedCouponCode = Optional.empty();
         if (cart.couponCode().isPresent()) {
-            CouponCode code;
-            try {
-                code = CouponCode.of(cart.couponCode().get());
-            } catch (IllegalArgumentException invalidCode) {
-                cart.removeCoupon(clock);
-                return Result.failWith(ErrorCode.INVALID_COUPON, invalidCode.getMessage());
-            }
-            CouponEvaluation evaluation = couponQuery.evaluate(code, subtotal);
-            Result<Void> mapped = mapCouponEvaluation(evaluation);
+            CouponPricing pricing = couponPricing.evaluate(cart.couponCode().get(), subtotal);
+            Result<Void> mapped = mapCouponPricing(pricing);
             if (!mapped.isSuccess()) {
                 cart.removeCoupon(clock);
                 carts.save(cart);
                 return Result.failure(((Result.Failure<Void>) mapped).notification());
             }
-            CouponEvaluation.Applicable applicable = (CouponEvaluation.Applicable) evaluation;
+            CouponPricing.Applicable applicable = (CouponPricing.Applicable) pricing;
             discount = applicable.discount();
-            appliedCouponCode = Optional.of(code.value());
+            appliedCouponCode = Optional.of(applicable.code());
         }
 
         // 6. Build Order
@@ -173,14 +165,14 @@ public class PlaceOrderUseCase {
         return Result.success(toPlacedView(order));
     }
 
-    private static Result<Void> mapCouponEvaluation(CouponEvaluation evaluation) {
-        return switch (evaluation) {
-            case CouponEvaluation.Applicable a -> Result.ok();
-            case CouponEvaluation.NotFound nf -> Result.failWith(ErrorCode.COUPON_NOT_FOUND);
-            case CouponEvaluation.Inactive i -> Result.failWith(ErrorCode.COUPON_INACTIVE);
-            case CouponEvaluation.Expired e -> Result.failWith(ErrorCode.COUPON_EXPIRED);
-            case CouponEvaluation.Exhausted ex -> Result.failWith(ErrorCode.COUPON_EXHAUSTED);
-            case CouponEvaluation.BelowMinOrder bm -> Result.failWith(ErrorCode.COUPON_BELOW_MIN_ORDER,
+    private static Result<Void> mapCouponPricing(CouponPricing pricing) {
+        return switch (pricing) {
+            case CouponPricing.Applicable a -> Result.ok();
+            case CouponPricing.NotFound nf -> Result.failWith(ErrorCode.COUPON_NOT_FOUND);
+            case CouponPricing.Inactive i -> Result.failWith(ErrorCode.COUPON_INACTIVE);
+            case CouponPricing.Expired e -> Result.failWith(ErrorCode.COUPON_EXPIRED);
+            case CouponPricing.Exhausted ex -> Result.failWith(ErrorCode.COUPON_EXHAUSTED);
+            case CouponPricing.BelowMinOrder bm -> Result.failWith(ErrorCode.COUPON_BELOW_MIN_ORDER,
                 "subtotal %s < minOrder %s".formatted(bm.subtotal().amount(), bm.minOrder().amount()));
         };
     }
