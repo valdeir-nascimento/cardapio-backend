@@ -3,12 +3,18 @@ package com.cardapio.ordering.application.usecase;
 import com.cardapio.ordering.application.command.PlaceOrderCommand;
 import com.cardapio.ordering.application.dto.PlacedOrderView;
 import com.cardapio.ordering.domain.event.OrderPlaced;
+import com.cardapio.ordering.domain.exception.DineInInvariantException;
 import com.cardapio.ordering.domain.model.Cart;
+import com.cardapio.ordering.domain.model.Comanda;
+import com.cardapio.ordering.domain.model.ComandaId;
+import com.cardapio.ordering.domain.model.ComandaStatus;
 import com.cardapio.ordering.domain.model.DeliveryAddress;
 import com.cardapio.ordering.domain.model.Order;
 import com.cardapio.ordering.domain.model.OrderItem;
 import com.cardapio.ordering.domain.model.OrderModality;
+import com.cardapio.ordering.domain.model.TableId;
 import com.cardapio.ordering.domain.port.CartRepository;
+import com.cardapio.ordering.domain.port.ComandaRepository;
 import com.cardapio.ordering.domain.port.DeliveryFeeQueryPort;
 import com.cardapio.ordering.domain.port.IdempotencyKeyStore;
 import com.cardapio.ordering.domain.port.OrderRepository;
@@ -36,6 +42,7 @@ public class PlaceOrderUseCase {
     private final CartPricingService pricing;
     private final DeliveryFeeQueryPort deliveryFees;
     private final IdempotencyKeyStore idempotency;
+    private final ComandaRepository comandas;
     private final ApplicationEventPublisher events;
     private final Clock clock;
 
@@ -67,10 +74,13 @@ public class PlaceOrderUseCase {
         }
         List<OrderItem> items = ((Result.Success<List<OrderItem>>) priced).value();
 
-        // 4. Compute delivery fee + address
+        // 4. Compute delivery fee + address + dine-in context
         Currency currency = items.get(0).lineTotal().currency();
         Money fee = Money.of(BigDecimal.ZERO, currency);
         Optional<DeliveryAddress> address = Optional.empty();
+        Optional<TableId> tableId = Optional.empty();
+        Optional<ComandaId> comandaId = Optional.empty();
+        Comanda dineInComanda = null;
 
         if (cmd.modality() == OrderModality.DELIVERY) {
             if (cmd.address() == null) return Result.failWith(ErrorCode.ADDRESS_REQUIRED);
@@ -84,13 +94,28 @@ public class PlaceOrderUseCase {
                 n.addError("address", ErrorCode.INVALID_INPUT, e.getMessage());
                 return Result.failure(n);
             }
+        } else if (cmd.modality() == OrderModality.DINE_IN) {
+            if (cmd.tableId() == null || cmd.comandaId() == null) {
+                return Result.failWith(ErrorCode.DINE_IN_CONTEXT_REQUIRED);
+            }
+            dineInComanda = comandas.findById(cmd.comandaId()).orElse(null);
+            if (dineInComanda == null) return Result.failWith(ErrorCode.COMANDA_NOT_FOUND);
+            if (dineInComanda.status() == ComandaStatus.CLOSED) return Result.failWith(ErrorCode.COMANDA_CLOSED);
+            if (!dineInComanda.tableId().equals(cmd.tableId())) {
+                return Result.failWith(ErrorCode.DINE_IN_CONTEXT_REQUIRED, "comanda does not belong to this table");
+            }
+            if (!dineInComanda.hasMember(cmd.customerId())) {
+                return Result.failWith(ErrorCode.COMANDA_NOT_MEMBER);
+            }
+            tableId = Optional.of(cmd.tableId());
+            comandaId = Optional.of(cmd.comandaId());
         }
 
         // 5. Build Order
         Order order;
         try {
-            order = Order.place(cmd.customerId(), cmd.modality(), items, fee, address, clock);
-        } catch (IllegalArgumentException e) {
+            order = Order.place(cmd.customerId(), cmd.modality(), items, fee, address, tableId, comandaId, clock);
+        } catch (IllegalArgumentException | DineInInvariantException e) {
             Notification n = Notification.empty();
             n.addError("order", ErrorCode.INVALID_INPUT, e.getMessage());
             return Result.failure(n);
@@ -99,6 +124,12 @@ public class PlaceOrderUseCase {
         // 6. Persist + idempotency (same TX)
         orders.save(order);
         idempotency.register(cmd.idempotencyKey(), cmd.customerId(), order.id());
+
+        // 6b. Attach the order to its comanda (DINE_IN only)
+        if (dineInComanda != null) {
+            dineInComanda.attachOrder(order.id(), clock);
+            comandas.save(dineInComanda);
+        }
 
         // 7. Empty cart
         cart.clear(clock);

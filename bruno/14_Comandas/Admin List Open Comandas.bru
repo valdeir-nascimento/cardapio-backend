@@ -1,0 +1,19 @@
+meta {
+  name: Admin List Open Comandas
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/comandas?status=OPEN
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+params:query {
+  status: OPEN
+}

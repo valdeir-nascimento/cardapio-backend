@@ -1,0 +1,20 @@
+meta {
+  name: Admin Close Comanda
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/comandas/{{comandaId}}/close
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+docs {
+  Fecha a comanda. Falha com COMANDA_HAS_PENDING_ORDERS se algum
+  pedido vinculado ainda não está em SERVED ou CANCELED.
+}

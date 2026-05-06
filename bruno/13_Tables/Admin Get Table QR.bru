@@ -1,0 +1,21 @@
+meta {
+  name: Admin Get Table QR
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/tables/{{tableId}}/qr
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+docs {
+  Retorna `presignedUrl` válida por TTL curto (10 min) que aponta para
+  o PNG armazenado no R2/storage. Quando R2 não está configurado,
+  retorna URL local fake.
+}

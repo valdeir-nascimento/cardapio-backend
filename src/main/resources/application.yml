@@ -36,6 +36,18 @@ zapi:
   client-token: ${ZAPI_CLIENT_TOKEN:dummy}
   base-url: ${ZAPI_BASE_URL:https://api.z-api.io}
 
+r2:
+  enabled: ${R2_ENABLED:false}
+  access-key-id: ${R2_ACCESS_KEY_ID:dummy}
+  secret-access-key: ${R2_SECRET_ACCESS_KEY:dummy}
+  endpoint: ${R2_ENDPOINT:https://example.r2.cloudflarestorage.com}
+  bucket: ${R2_BUCKET:cardapio-qr}
+  region: ${R2_REGION:auto}
+
+qr:
+  size-px: ${QR_SIZE_PX:512}
+  presigned-url-ttl-seconds: ${QR_PRESIGNED_URL_TTL_SECONDS:600}
+
 notification:
   dispatch:
     enabled: ${NOTIFICATION_DISPATCH_ENABLED:true}
