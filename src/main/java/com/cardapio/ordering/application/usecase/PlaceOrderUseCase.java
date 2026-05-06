@@ -18,6 +18,9 @@ import com.cardapio.ordering.domain.port.ComandaRepository;
 import com.cardapio.ordering.domain.port.DeliveryFeeQueryPort;
 import com.cardapio.ordering.domain.port.IdempotencyKeyStore;
 import com.cardapio.ordering.domain.port.OrderRepository;
+import com.cardapio.promotion.application.CouponQueryPort;
+import com.cardapio.promotion.domain.dto.CouponEvaluation;
+import com.cardapio.promotion.domain.model.CouponCode;
 import com.cardapio.shared.domain.ErrorCode;
 import com.cardapio.shared.domain.Money;
 import com.cardapio.shared.domain.Notification;
@@ -43,6 +46,7 @@ public class PlaceOrderUseCase {
     private final DeliveryFeeQueryPort deliveryFees;
     private final IdempotencyKeyStore idempotency;
     private final ComandaRepository comandas;
+    private final CouponQueryPort couponQuery;
     private final ApplicationEventPublisher events;
     private final Clock clock;
 
@@ -111,17 +115,43 @@ public class PlaceOrderUseCase {
             comandaId = Optional.of(cmd.comandaId());
         }
 
-        // 5. Build Order
+        // 5. Evaluate coupon (re-check at checkout — may have expired since apply)
+        Money subtotal = items.stream().map(OrderItem::lineTotal)
+            .reduce(Money.of(BigDecimal.ZERO, currency), Money::add);
+        Money discount = Money.of(BigDecimal.ZERO, currency);
+        Optional<String> appliedCouponCode = Optional.empty();
+        if (cart.couponCode().isPresent()) {
+            CouponCode code;
+            try {
+                code = CouponCode.of(cart.couponCode().get());
+            } catch (IllegalArgumentException invalidCode) {
+                cart.removeCoupon(clock);
+                return Result.failWith(ErrorCode.INVALID_COUPON, invalidCode.getMessage());
+            }
+            CouponEvaluation evaluation = couponQuery.evaluate(code, subtotal);
+            Result<Void> mapped = mapCouponEvaluation(evaluation);
+            if (!mapped.isSuccess()) {
+                cart.removeCoupon(clock);
+                carts.save(cart);
+                return Result.failure(((Result.Failure<Void>) mapped).notification());
+            }
+            CouponEvaluation.Applicable applicable = (CouponEvaluation.Applicable) evaluation;
+            discount = applicable.discount();
+            appliedCouponCode = Optional.of(code.value());
+        }
+
+        // 6. Build Order
         Order order;
         try {
-            order = Order.place(cmd.customerId(), cmd.modality(), items, fee, address, tableId, comandaId, clock);
+            order = Order.place(cmd.customerId(), cmd.modality(), items, fee, address,
+                tableId, comandaId, discount, appliedCouponCode, clock);
         } catch (IllegalArgumentException | DineInInvariantException e) {
             Notification n = Notification.empty();
             n.addError("order", ErrorCode.INVALID_INPUT, e.getMessage());
             return Result.failure(n);
         }
 
-        // 6. Persist + idempotency (same TX)
+        // 7. Persist + idempotency (same TX)
         orders.save(order);
         idempotency.register(cmd.idempotencyKey(), cmd.customerId(), order.id());
 
@@ -137,9 +167,22 @@ public class PlaceOrderUseCase {
 
         // 8. Publish event (transactional outbox via Modulith)
         events.publishEvent(OrderPlaced.of(
-            order.id(), order.customerId(), order.modality(), order.total(), order.placedAt()));
+            order.id(), order.customerId(), order.modality(), order.total(),
+            order.appliedCouponCode().orElse(null), order.placedAt()));
 
         return Result.success(toPlacedView(order));
+    }
+
+    private static Result<Void> mapCouponEvaluation(CouponEvaluation evaluation) {
+        return switch (evaluation) {
+            case CouponEvaluation.Applicable a -> Result.ok();
+            case CouponEvaluation.NotFound nf -> Result.failWith(ErrorCode.COUPON_NOT_FOUND);
+            case CouponEvaluation.Inactive i -> Result.failWith(ErrorCode.COUPON_INACTIVE);
+            case CouponEvaluation.Expired e -> Result.failWith(ErrorCode.COUPON_EXPIRED);
+            case CouponEvaluation.Exhausted ex -> Result.failWith(ErrorCode.COUPON_EXHAUSTED);
+            case CouponEvaluation.BelowMinOrder bm -> Result.failWith(ErrorCode.COUPON_BELOW_MIN_ORDER,
+                "subtotal %s < minOrder %s".formatted(bm.subtotal().amount(), bm.minOrder().amount()));
+        };
     }
 
     private DeliveryAddress toDeliveryAddress(PlaceOrderCommand.DeliveryAddressInput a) {

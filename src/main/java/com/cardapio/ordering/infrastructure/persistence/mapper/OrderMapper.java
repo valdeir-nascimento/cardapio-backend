@@ -48,6 +48,7 @@ public final class OrderMapper {
             address.map(DeliveryAddress::neighborhoodId).orElse(null),
             order.tableId().map(TableId::value).orElse(null),
             order.comandaId().map(ComandaId::value).orElse(null),
+            order.appliedCouponCode().orElse(null),
             order.placedAt(),
             order.updatedAt()
         );
@@ -104,6 +105,7 @@ public final class OrderMapper {
 
         Optional<TableId> tableId = e.getTableId() == null ? Optional.empty() : Optional.of(TableId.of(e.getTableId()));
         Optional<ComandaId> comandaId = e.getComandaId() == null ? Optional.empty() : Optional.of(ComandaId.of(e.getComandaId()));
+        Optional<String> couponCode = Optional.ofNullable(e.getAppliedCouponCode());
 
         return Order.rehydrate(
             OrderId.of(e.getId()),
@@ -118,6 +120,7 @@ public final class OrderMapper {
             address,
             tableId,
             comandaId,
+            couponCode,
             e.getPlacedAt(),
             e.getUpdatedAt()
         );
