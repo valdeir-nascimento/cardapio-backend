@@ -159,6 +159,12 @@
             <version>${logstash-logback.version}</version>
         </dependency>
 
+        <!-- Prometheus exporter for /actuator/prometheus -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -20,9 +20,9 @@ import java.util.UUID;
  *   - correlationId: from X-Correlation-Id header if present.
  *   - customerId: populated by {@link CustomerContextFilter} after JWT auth runs.
  */
-@Component
+@Component("mdcRequestFilter")
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class RequestContextFilter extends OncePerRequestFilter {
+public class MdcRequestFilter extends OncePerRequestFilter {
 
     public static final String HEADER_REQUEST_ID = "X-Request-Id";
     public static final String HEADER_CORRELATION_ID = "X-Correlation-Id";

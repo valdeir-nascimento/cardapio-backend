@@ -10,6 +10,7 @@ import com.cardapio.review.domain.port.ReviewRepository;
 import com.cardapio.review.domain.port.ReviewableOrderRepository;
 import com.cardapio.shared.domain.ErrorCode;
 import com.cardapio.shared.domain.Result;
+import com.cardapio.shared.metrics.DomainMetrics;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class SubmitReviewUseCase {
 
     private final ReviewableOrderRepository reviewableOrders;
     private final ReviewRepository reviews;
+    private final DomainMetrics metrics;
     private final Clock clock;
 
     @Transactional
@@ -55,6 +57,7 @@ public class SubmitReviewUseCase {
         } catch (DataIntegrityViolationException race) {
             return Result.failWith(ErrorCode.REVIEW_ALREADY_SUBMITTED);
         }
+        metrics.countReviewSubmitted();
         return Result.success(ReviewView.from(review));
     }
 }
