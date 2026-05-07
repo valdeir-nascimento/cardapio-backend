@@ -9,7 +9,8 @@
         "ordering::OrderingFacade",
         "ordering::dto",
         "identity::IdentityFacade",
-        "identity::dto"
+        "identity::dto",
+        "identity::security"
     }
 )
 package com.cardapio.review;
