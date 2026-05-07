@@ -118,6 +118,17 @@ public class OrderingFacadeImpl implements OrderingFacade {
         cancelOrder.execute(cmd).orElseThrow(OrderingFacadeImpl::toException);
     }
 
+    @Override
+    public List<UUID> getOrderProductIds(OrderId orderId) {
+        OrderView view = getOrder.getAdmin(orderId)
+            .orElseThrow(() -> new NotFoundException(
+                Notification.ofSingle(com.cardapio.shared.domain.ErrorCode.ORDER_NOT_FOUND)));
+        return view.items().stream()
+            .map(com.cardapio.ordering.application.dto.OrderItemView::productId)
+            .distinct()
+            .toList();
+    }
+
     private static RuntimeException toException(Notification n) {
         boolean notFound = n.errors().stream()
             .anyMatch(e -> e.code() != null && e.code().endsWith("_NOT_FOUND"));
