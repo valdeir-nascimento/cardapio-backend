@@ -37,3 +37,6 @@ notification:
     enabled: false
     fixed-delay-ms: 60000
     initial-delay-ms: 60000
+
+rate-limit:
+  enabled: false

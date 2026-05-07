@@ -25,6 +25,7 @@
         <awssdk.version>2.29.20</awssdk.version>
         <java-jwt.version>4.4.0</java-jwt.version>
         <logstash-logback.version>8.0</logstash-logback.version>
+        <bucket4j.version>8.10.1</bucket4j.version>
     </properties>
 
     <dependencyManagement>
@@ -163,6 +164,17 @@
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+        <!-- Rate limiting (Bucket4j + Caffeine in-memory backend) -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>${bucket4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
         </dependency>
 
         <!-- Test -->

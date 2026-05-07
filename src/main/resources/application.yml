@@ -69,6 +69,30 @@ jwks:
   cache-ttl: ${JWKS_CACHE_TTL:1h}
   fetch-timeout-ms: ${JWKS_FETCH_TIMEOUT_MS:5000}
 
+rate-limit:
+  enabled: ${RATE_LIMIT_ENABLED:true}
+  rules:
+    - paths:
+        - /api/v1/auth/login
+        - /api/v1/admin/auth/login
+      methods: [POST]
+      capacity: 10
+      refill-tokens: 10
+      refill-period: 1m
+    - paths:
+        - /api/v1/auth/social/google
+        - /api/v1/auth/social/apple
+      methods: [POST]
+      capacity: 30
+      refill-tokens: 30
+      refill-period: 1m
+    - paths:
+        - /api/v1/orders
+      methods: [POST]
+      capacity: 60
+      refill-tokens: 60
+      refill-period: 1m
+
 notification:
   dispatch:
     enabled: ${NOTIFICATION_DISPATCH_ENABLED:true}
