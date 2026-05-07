@@ -1,0 +1,19 @@
+meta {
+  name: Admin Product Rating Stats by Product
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/reviews/stats?productId={{productId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+params:query {
+  productId: {{productId}}
+}

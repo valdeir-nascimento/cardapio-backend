@@ -41,4 +41,11 @@ public interface OrderingFacade {
     List<OrderSummaryView> listOrdersAdmin(OrderStatus status, Instant from, Instant to, int limit, int offset);
     void advanceStatus(AdvanceOrderStatusCommand cmd) throws NotificationException;
     void cancelOrder(CancelOrderCommand cmd) throws NotificationException;
+
+    /**
+     * Returns distinct product IDs in the order's items, preserving line order.
+     * Used by cross-context read flows (e.g. review projection) to avoid
+     * carrying items on every domain event.
+     */
+    List<UUID> getOrderProductIds(OrderId orderId) throws NotFoundException;
 }
