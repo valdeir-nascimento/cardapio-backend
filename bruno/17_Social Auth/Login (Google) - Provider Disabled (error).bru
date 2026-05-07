@@ -1,0 +1,27 @@
+meta {
+  name: Login (Google) - Provider Disabled (error)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/social/google
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "idToken": "anything"
+  }
+}
+
+docs {
+  Cenário: a app está rodando com OAUTH_GOOGLE_ENABLED=false.
+  O bean GoogleIdTokenVerifier não é registrado, então o use case
+  retorna SOCIAL_LOGIN_PROVIDER_UNAVAILABLE e a resposta é 401.
+}
