@@ -82,6 +82,55 @@ class CustomerTest {
     }
 
     @Test
+    void anonymizeWipesPiiAndMarksDeleted() {
+        java.time.Clock clock = java.time.Clock.fixed(java.time.Instant.parse("2026-05-06T12:00:00Z"), java.time.ZoneOffset.UTC);
+        Customer customer = Customer.register("Maria Silva",
+            Email.of("maria@example.com"),
+            PhoneNumber.of("+5511912345678"),
+            HashedPassword.of("$2a$12$hash"));
+
+        customer.anonymize(clock);
+
+        assertThat(customer.isDeleted()).isTrue();
+        assertThat(customer.deletedAt()).contains(clock.instant());
+        assertThat(customer.name()).startsWith("deleted-user-");
+        assertThat(customer.email().value()).startsWith("deleted+").endsWith("@cardapio.local");
+        assertThat(customer.phoneNumber()).isEmpty();
+        assertThat(customer.passwordHash()).isEmpty();
+        assertThat(customer.socialIdentities()).isEmpty();
+    }
+
+    @Test
+    void anonymizeIsIdempotent() {
+        java.time.Clock first = java.time.Clock.fixed(java.time.Instant.parse("2026-05-06T12:00:00Z"), java.time.ZoneOffset.UTC);
+        java.time.Clock later = java.time.Clock.fixed(java.time.Instant.parse("2026-06-01T12:00:00Z"), java.time.ZoneOffset.UTC);
+        Customer customer = Customer.register("X", Email.of("x@y.com"),
+            PhoneNumber.of("+5511912345678"), HashedPassword.of("$2a$12$hash"));
+
+        customer.anonymize(first);
+        String anonymizedEmail = customer.email().value();
+        customer.anonymize(later); // second call should be a no-op
+
+        assertThat(customer.deletedAt()).contains(first.instant());
+        assertThat(customer.email().value()).isEqualTo(anonymizedEmail);
+    }
+
+    @Test
+    void rehydrateAcceptsAnonymizedCustomerWithoutAuth() {
+        Customer customer = Customer.rehydrate(
+            CustomerId.newId(),
+            "deleted-user-12345678",
+            Email.of("deleted+12345678@cardapio.local"),
+            null, null,
+            java.util.List.of(),
+            java.time.Instant.parse("2026-05-06T12:00:00Z"));
+
+        assertThat(customer.isDeleted()).isTrue();
+        assertThat(customer.passwordHash()).isEmpty();
+        assertThat(customer.socialIdentities()).isEmpty();
+    }
+
+    @Test
     void rehydratesFromPersistence() {
         CustomerId id = CustomerId.newId();
         Customer customer = Customer.rehydrate(

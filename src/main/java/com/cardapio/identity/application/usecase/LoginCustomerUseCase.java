@@ -34,7 +34,7 @@ public class LoginCustomerUseCase extends AbstractLoginUseCase<Customer> {
     @Override
     @Transactional
     protected Optional<Customer> findUser(Email email) {
-        return customers.findByEmail(email);
+        return customers.findByEmail(email).filter(c -> !c.isDeleted());
     }
 
     @Override

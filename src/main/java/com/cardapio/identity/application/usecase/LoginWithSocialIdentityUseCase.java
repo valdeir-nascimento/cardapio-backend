@@ -70,7 +70,8 @@ public class LoginWithSocialIdentityUseCase {
             return Result.failWith(ErrorCode.INVALID_ID_TOKEN, e.reason() + ": " + e.getMessage());
         }
 
-        Optional<Customer> bySubject = customers.findBySocialIdentity(cmd.provider(), verified.subject());
+        Optional<Customer> bySubject = customers.findBySocialIdentity(cmd.provider(), verified.subject())
+            .filter(c -> !c.isDeleted());
         Customer customer;
         if (bySubject.isPresent()) {
             customer = bySubject.get();
@@ -82,7 +83,7 @@ public class LoginWithSocialIdentityUseCase {
             SocialIdentity identity = new SocialIdentity(
                 cmd.provider(), verified.subject(), verified.email(), clock.instant());
 
-            Optional<Customer> byEmail = customers.findByEmail(email);
+            Optional<Customer> byEmail = customers.findByEmail(email).filter(c -> !c.isDeleted());
             if (byEmail.isPresent()) {
                 customer = byEmail.get();
                 try {

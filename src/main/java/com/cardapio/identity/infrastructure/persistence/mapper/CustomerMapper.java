@@ -23,15 +23,18 @@ public final class CustomerMapper {
             c.phoneNumber().map(PhoneNumber::value).orElse(null),
             c.passwordHash().map(HashedPassword::value).orElse(null),
             now, now);
+        entity.setDeletedAt(c.deletedAt().orElse(null));
         entity.setSocialIdentities(toJpaSocialIdentities(c));
         return entity;
     }
 
     public static void updateJpa(CustomerJpaEntity entity, Customer c, Instant now) {
         entity.setName(c.name());
+        entity.setEmail(c.email().value());
         entity.setPhoneNumber(c.phoneNumber().map(PhoneNumber::value).orElse(null));
         entity.setPasswordHash(c.passwordHash().map(HashedPassword::value).orElse(null));
         entity.setUpdatedAt(now);
+        entity.setDeletedAt(c.deletedAt().orElse(null));
         // Replace in place so Hibernate handles the diff via orphanRemoval.
         entity.getSocialIdentities().clear();
         entity.getSocialIdentities().addAll(toJpaSocialIdentities(c));
@@ -53,7 +56,8 @@ public final class CustomerMapper {
             Email.of(e.getEmail()),
             phone,
             hash,
-            identities);
+            identities,
+            e.getDeletedAt());
     }
 
     private static List<SocialIdentityJpaEntity> toJpaSocialIdentities(Customer c) {
