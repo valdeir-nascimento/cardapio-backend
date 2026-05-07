@@ -3,6 +3,7 @@ package com.cardapio.identity.application;
 import com.cardapio.api.error.NotFoundException;
 import com.cardapio.api.error.NotificationException;
 import com.cardapio.api.error.UnauthorizedException;
+import com.cardapio.identity.application.command.DeleteMyAccountCommand;
 import com.cardapio.identity.application.command.LoginCommand;
 import com.cardapio.identity.application.command.LoginWithSocialIdentityCommand;
 import com.cardapio.identity.application.command.RefreshTokenCommand;
@@ -27,6 +28,7 @@ public class IdentityFacadeImpl implements IdentityFacade {
     private final RefreshTokenUseCase refresh;
     private final GetMyProfileUseCase getMy;
     private final UpdateMyProfileUseCase updateMy;
+    private final DeleteMyAccountUseCase deleteMy;
 
     @Override
     public CustomerId registerCustomer(RegisterCustomerCommand cmd) {
@@ -61,6 +63,11 @@ public class IdentityFacadeImpl implements IdentityFacade {
     @Override
     public CustomerProfile updateMyProfile(UpdateProfileCommand cmd) {
         return updateMy.execute(cmd).orElseThrow(IdentityFacadeImpl::toException);
+    }
+
+    @Override
+    public void deleteMyAccount(DeleteMyAccountCommand cmd) {
+        deleteMy.execute(cmd).orElseThrow(IdentityFacadeImpl::toException);
     }
 
     private static RuntimeException toException(Notification n) {
