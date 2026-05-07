@@ -1,0 +1,15 @@
+meta {
+  name: Customer Get My Review
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}/review
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

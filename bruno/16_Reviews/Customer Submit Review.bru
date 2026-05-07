@@ -1,0 +1,32 @@
+meta {
+  name: Customer Submit Review
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}/review
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "rating": 5,
+    "comment": "muito bom, recomendo"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("reviewId", res.body.id);
+  }
+}

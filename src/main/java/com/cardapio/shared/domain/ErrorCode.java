@@ -76,6 +76,13 @@ public enum ErrorCode {
     COUPON_BELOW_MIN_ORDER("valor mínimo do pedido não atingido"),
     COUPON_EXHAUSTED("cupom esgotou os usos"),
 
+    // Review
+    ORDER_NOT_REVIEWABLE("pedido não pode ser avaliado"),
+    REVIEW_ALREADY_SUBMITTED("avaliação já enviada para este pedido"),
+    REVIEW_NOT_FOUND("avaliação não encontrada"),
+    INVALID_RATING("rating inválido"),
+    INVALID_COMMENT("comentário inválido"),
+
     // Payment
     PAYMENT_NOT_FOUND("pagamento não encontrado"),
     PAYMENT_ORDER_NOT_PAYABLE("pedido não está em estado pagável"),

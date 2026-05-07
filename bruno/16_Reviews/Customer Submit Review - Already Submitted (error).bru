@@ -1,0 +1,30 @@
+meta {
+  name: Customer Submit Review - Already Submitted (error)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders/{{orderId}}/review
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "rating": 3,
+    "comment": "mudei de opinião"
+  }
+}
+
+docs {
+  Espera 422 REVIEW_ALREADY_SUBMITTED. Reviews são imutáveis no MVP.
+}
