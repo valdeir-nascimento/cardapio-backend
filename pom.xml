@@ -23,6 +23,7 @@
         <jjwt.version>0.12.6</jjwt.version>
         <zxing.version>3.5.3</zxing.version>
         <awssdk.version>2.29.20</awssdk.version>
+        <java-jwt.version>4.4.0</java-jwt.version>
     </properties>
 
     <dependencyManagement>
@@ -141,6 +142,13 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
             <version>${awssdk.version}</version>
+        </dependency>
+
+        <!-- JWT verification for social ID tokens (Google + Apple) -->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>${java-jwt.version}</version>
         </dependency>
 
         <!-- Test -->

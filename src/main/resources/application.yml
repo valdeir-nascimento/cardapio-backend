@@ -48,6 +48,22 @@ qr:
   size-px: ${QR_SIZE_PX:512}
   presigned-url-ttl-seconds: ${QR_PRESIGNED_URL_TTL_SECONDS:600}
 
+oauth:
+  google:
+    enabled: ${OAUTH_GOOGLE_ENABLED:false}
+    client-id: ${OAUTH_GOOGLE_CLIENT_ID:dummy.apps.googleusercontent.com}
+    issuer: ${OAUTH_GOOGLE_ISSUER:https://accounts.google.com}
+    jwks-uri: ${OAUTH_GOOGLE_JWKS_URI:https://www.googleapis.com/oauth2/v3/certs}
+  apple:
+    enabled: ${OAUTH_APPLE_ENABLED:false}
+    client-id: ${OAUTH_APPLE_CLIENT_ID:com.example.dummy}
+    issuer: ${OAUTH_APPLE_ISSUER:https://appleid.apple.com}
+    jwks-uri: ${OAUTH_APPLE_JWKS_URI:https://appleid.apple.com/auth/keys}
+
+jwks:
+  cache-ttl: ${JWKS_CACHE_TTL:1h}
+  fetch-timeout-ms: ${JWKS_FETCH_TIMEOUT_MS:5000}
+
 notification:
   dispatch:
     enabled: ${NOTIFICATION_DISPATCH_ENABLED:true}
