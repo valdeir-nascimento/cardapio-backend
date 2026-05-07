@@ -9,6 +9,7 @@ import com.cardapio.identity.application.command.LoginWithSocialIdentityCommand;
 import com.cardapio.identity.application.command.RefreshTokenCommand;
 import com.cardapio.identity.application.command.RegisterCustomerCommand;
 import com.cardapio.identity.application.command.UpdateProfileCommand;
+import com.cardapio.identity.application.dto.CustomerDataExport;
 import com.cardapio.identity.application.dto.CustomerProfile;
 import com.cardapio.identity.domain.model.CustomerId;
 import com.cardapio.identity.domain.model.TokenPair;
@@ -32,4 +33,6 @@ public interface IdentityFacade {
     CustomerProfile updateMyProfile(UpdateProfileCommand cmd) throws NotificationException;
 
     void deleteMyAccount(DeleteMyAccountCommand cmd) throws NotFoundException, NotificationException;
+
+    CustomerDataExport exportMyData(CustomerId id) throws NotFoundException;
 }

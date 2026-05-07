@@ -9,6 +9,7 @@ import com.cardapio.identity.application.command.LoginWithSocialIdentityCommand;
 import com.cardapio.identity.application.command.RefreshTokenCommand;
 import com.cardapio.identity.application.command.RegisterCustomerCommand;
 import com.cardapio.identity.application.command.UpdateProfileCommand;
+import com.cardapio.identity.application.dto.CustomerDataExport;
 import com.cardapio.identity.application.dto.CustomerProfile;
 import com.cardapio.identity.application.usecase.*;
 import com.cardapio.identity.domain.model.CustomerId;
@@ -29,6 +30,7 @@ public class IdentityFacadeImpl implements IdentityFacade {
     private final GetMyProfileUseCase getMy;
     private final UpdateMyProfileUseCase updateMy;
     private final DeleteMyAccountUseCase deleteMy;
+    private final ExportMyDataUseCase exportMy;
 
     @Override
     public CustomerId registerCustomer(RegisterCustomerCommand cmd) {
@@ -68,6 +70,11 @@ public class IdentityFacadeImpl implements IdentityFacade {
     @Override
     public void deleteMyAccount(DeleteMyAccountCommand cmd) {
         deleteMy.execute(cmd).orElseThrow(IdentityFacadeImpl::toException);
+    }
+
+    @Override
+    public CustomerDataExport exportMyData(CustomerId id) {
+        return exportMy.execute(id).orElseThrow(NotFoundException::new);
     }
 
     private static RuntimeException toException(Notification n) {

@@ -6,10 +6,14 @@ import com.cardapio.identity.api.security.CardapioPrincipal;
 import com.cardapio.identity.application.IdentityFacade;
 import com.cardapio.identity.application.command.DeleteMyAccountCommand;
 import com.cardapio.identity.application.command.UpdateProfileCommand;
+import com.cardapio.identity.application.dto.CustomerDataExport;
 import com.cardapio.identity.domain.model.CustomerId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -36,5 +40,15 @@ public class MeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@AuthenticationPrincipal CardapioPrincipal principal) {
         identity.deleteMyAccount(new DeleteMyAccountCommand(CustomerId.of(principal.subject())));
+    }
+
+    @GetMapping("/data-export")
+    public ResponseEntity<CustomerDataExport> dataExport(@AuthenticationPrincipal CardapioPrincipal principal) {
+        CustomerDataExport export = identity.exportMyData(CustomerId.of(principal.subject()));
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"cardapio-export-" + export.id() + ".json\"")
+            .body(export);
     }
 }
