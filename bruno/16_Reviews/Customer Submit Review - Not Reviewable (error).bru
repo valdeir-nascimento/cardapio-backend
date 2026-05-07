@@ -1,0 +1,30 @@
+meta {
+  name: Customer Submit Review - Not Reviewable (error)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders/{{nonTerminalOrderId}}/review
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "rating": 5
+  }
+}
+
+docs {
+  Espera 422 ORDER_NOT_REVIEWABLE quando o pedido ainda não atingiu
+  estado terminal de sucesso, ou quando pertence a outro cliente.
+}

@@ -1,0 +1,24 @@
+meta {
+  name: Admin Product Rating Stats
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/reviews/stats?limit=20
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+params:query {
+  limit: 20
+}
+
+docs {
+  Top 20 produtos por número de avaliações, com média de rating.
+  Filtros opcionais: productId, from, to (Instant ISO-8601).
+}

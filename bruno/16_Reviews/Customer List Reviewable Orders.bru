@@ -1,0 +1,21 @@
+meta {
+  name: Customer List Reviewable Orders
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/me/reviewable-orders
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Lista pedidos do cliente que chegaram a status terminal de sucesso
+  (DELIVERED / PICKED_UP / SERVED) e ainda não foram avaliados.
+  A projeção é populada pelo OrderStatusChangedReviewListener.
+}
