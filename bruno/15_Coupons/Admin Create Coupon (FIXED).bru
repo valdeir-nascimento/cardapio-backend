@@ -1,0 +1,28 @@
+meta {
+  name: Admin Create Coupon (FIXED)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/coupons
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "code": "BLACK5",
+    "type": "FIXED",
+    "value": 5.00,
+    "currency": "BRL"
+  }
+}

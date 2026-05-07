@@ -26,7 +26,9 @@ public final class CartMapper {
 
     public static CartJpaEntity toJpa(Cart cart) {
         CartJpaEntity entity = new CartJpaEntity(
-            cart.id().value(), cart.customerId(), cart.createdAt(), cart.updatedAt());
+            cart.id().value(), cart.customerId(),
+            cart.couponCode().orElse(null),
+            cart.createdAt(), cart.updatedAt());
         int pos = 0;
         for (CartItem ci : cart.items()) {
             entity.getItems().add(toItemJpa(ci, cart.id().value(), pos++));
@@ -36,6 +38,7 @@ public final class CartMapper {
 
     public static void rebuildItems(CartJpaEntity entity, Cart cart) {
         entity.setUpdatedAt(cart.updatedAt());
+        entity.setCouponCode(cart.couponCode().orElse(null));
         entity.getItems().clear();
         int pos = 0;
         for (CartItem ci : cart.items()) {
@@ -74,7 +77,8 @@ public final class CartMapper {
 
     public static Cart toDomain(CartJpaEntity e) {
         List<CartItem> items = e.getItems().stream().map(CartMapper::toDomainItem).toList();
-        return Cart.rehydrate(CartId.of(e.getId()), e.getCustomerId(), items, e.getCreatedAt(), e.getUpdatedAt());
+        return Cart.rehydrate(CartId.of(e.getId()), e.getCustomerId(), items,
+            e.getCouponCode(), e.getCreatedAt(), e.getUpdatedAt());
     }
 
     private static CartItem toDomainItem(CartItemJpaEntity e) {

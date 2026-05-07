@@ -15,25 +15,49 @@ public final class Cart extends AggregateRoot<CartId> {
 
     private final UUID customerId;
     private final List<CartItem> items;
+    private String couponCode;
     private final Instant createdAt;
     private Instant updatedAt;
 
-    private Cart(CartId id, UUID customerId, List<CartItem> items, Instant createdAt, Instant updatedAt) {
+    private Cart(CartId id, UUID customerId, List<CartItem> items, String couponCode,
+                 Instant createdAt, Instant updatedAt) {
         super(id);
         this.customerId = Objects.requireNonNull(customerId, "customerId");
         this.items = new ArrayList<>(Objects.requireNonNull(items, "items"));
+        this.couponCode = couponCode;
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
         this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt");
     }
 
     public static Cart createEmpty(UUID customerId, Clock clock) {
         Instant now = clock.instant();
-        return new Cart(CartId.newId(), customerId, new ArrayList<>(), now, now);
+        return new Cart(CartId.newId(), customerId, new ArrayList<>(), null, now, now);
     }
 
     public static Cart rehydrate(CartId id, UUID customerId, List<CartItem> items,
                                  Instant createdAt, Instant updatedAt) {
-        return new Cart(id, customerId, items, createdAt, updatedAt);
+        return new Cart(id, customerId, items, null, createdAt, updatedAt);
+    }
+
+    public static Cart rehydrate(CartId id, UUID customerId, List<CartItem> items, String couponCode,
+                                 Instant createdAt, Instant updatedAt) {
+        return new Cart(id, customerId, items, couponCode, createdAt, updatedAt);
+    }
+
+    public void applyCoupon(String code, Clock clock) {
+        this.couponCode = code;
+        this.updatedAt = clock.instant();
+    }
+
+    public void removeCoupon(Clock clock) {
+        if (couponCode != null) {
+            this.couponCode = null;
+            this.updatedAt = clock.instant();
+        }
+    }
+
+    public Optional<String> couponCode() {
+        return Optional.ofNullable(couponCode);
     }
 
     public CartItem addItem(UUID productId,

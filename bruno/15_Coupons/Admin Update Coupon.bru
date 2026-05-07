@@ -1,0 +1,26 @@
+meta {
+  name: Admin Update Coupon
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/admin/coupons/{{couponId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "value": 15,
+    "maxUses": 200
+  }
+}

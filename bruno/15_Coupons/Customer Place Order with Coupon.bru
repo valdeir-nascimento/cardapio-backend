@@ -1,0 +1,33 @@
+meta {
+  name: Customer Place Order with Coupon
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/api/v1/orders
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+  Idempotency-Key: coupon-{{$randomUUID}}
+}
+
+body:json {
+  {
+    "modality": "PICKUP",
+    "address": null
+  }
+}
+
+docs {
+  O cupom é lido do Cart (não vem no body). Order resultante terá
+  appliedCouponCode + discount > 0. Após o evento OrderPlaced ser
+  consumido pelo listener, coupons.uses_count incrementa.
+}

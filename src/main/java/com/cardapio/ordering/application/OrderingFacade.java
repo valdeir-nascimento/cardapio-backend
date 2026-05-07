@@ -28,6 +28,8 @@ public interface OrderingFacade {
     void updateCartItem(UpdateCartItemCommand cmd) throws NotificationException;
     void removeCartItem(RemoveCartItemCommand cmd) throws NotificationException;
     CartView getMyCart(UUID customerId);
+    CartView applyCoupon(UUID customerId, String code) throws NotificationException;
+    CartView removeCoupon(UUID customerId);
 
     // Orders — customer
     PlacedOrderView placeOrder(PlaceOrderCommand cmd) throws NotificationException;

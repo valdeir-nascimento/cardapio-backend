@@ -2,6 +2,7 @@ package com.cardapio.ordering.api.rest;
 
 import com.cardapio.identity.api.security.CardapioPrincipal;
 import com.cardapio.ordering.api.dto.AddCartItemRequest;
+import com.cardapio.ordering.api.dto.ApplyCouponRequest;
 import com.cardapio.ordering.api.dto.CartResponse;
 import com.cardapio.ordering.api.dto.UpdateCartItemRequest;
 import com.cardapio.ordering.application.OrderingFacade;
@@ -50,6 +51,17 @@ public class CartController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(@AuthenticationPrincipal CardapioPrincipal me, @PathVariable UUID itemId) {
         ordering.removeCartItem(new RemoveCartItemCommand(me.subject(), itemId));
+    }
+
+    @PatchMapping("/coupon")
+    public CartResponse applyCoupon(@AuthenticationPrincipal CardapioPrincipal me,
+                                    @Valid @RequestBody ApplyCouponRequest body) {
+        return CartResponse.from(ordering.applyCoupon(me.subject(), body.code()));
+    }
+
+    @DeleteMapping("/coupon")
+    public CartResponse removeCoupon(@AuthenticationPrincipal CardapioPrincipal me) {
+        return CartResponse.from(ordering.removeCoupon(me.subject()));
     }
 
     public record CartItemCreatedResponse(UUID id) {}
