@@ -2,6 +2,8 @@ package com.cardapio.identity.infrastructure.persistence.jpa;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -18,10 +20,10 @@ public class CustomerJpaEntity {
     @Column(nullable = false, length = 180, unique = true)
     private String email;
 
-    @Column(name = "phone_number", nullable = false, length = 20)
+    @Column(name = "phone_number", length = 20)
     private String phoneNumber;
 
-    @Column(name = "password_hash", nullable = false, length = 120)
+    @Column(name = "password_hash", length = 120)
     private String passwordHash;
 
     @Column(name = "created_at", nullable = false)
@@ -29,6 +31,10 @@ public class CustomerJpaEntity {
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    private List<SocialIdentityJpaEntity> socialIdentities = new ArrayList<>();
 
     protected CustomerJpaEntity() {}
 
@@ -44,9 +50,11 @@ public class CustomerJpaEntity {
     public String getPasswordHash() { return passwordHash; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
+    public List<SocialIdentityJpaEntity> getSocialIdentities() { return socialIdentities; }
 
     public void setName(String name) { this.name = name; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
     public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public void setSocialIdentities(List<SocialIdentityJpaEntity> socialIdentities) { this.socialIdentities = socialIdentities; }
 }
