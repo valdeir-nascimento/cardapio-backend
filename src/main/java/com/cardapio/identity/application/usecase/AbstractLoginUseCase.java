@@ -41,7 +41,7 @@ public abstract class AbstractLoginUseCase<U> {
 
     protected abstract Optional<U> findUser(Email email);
 
-    protected abstract HashedPassword passwordOf(U user);
+    protected abstract Optional<HashedPassword> passwordOf(U user);
 
     protected abstract UUID subjectOf(U user);
 
@@ -70,7 +70,8 @@ public abstract class AbstractLoginUseCase<U> {
             return Result.failWith(ErrorCode.INVALID_CREDENTIALS);
         }
 
-        if (!hasher.matches(raw, passwordOf(user))) {
+        Optional<HashedPassword> hash = passwordOf(user);
+        if (hash.isEmpty() || !hasher.matches(raw, hash.get())) {
             return Result.failWith(ErrorCode.INVALID_CREDENTIALS);
         }
 

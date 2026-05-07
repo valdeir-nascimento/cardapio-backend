@@ -1,0 +1,36 @@
+meta {
+  name: Login (Google)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/social/google
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "idToken": "{{googleIdToken}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setEnvVar("accessToken", res.body.accessToken);
+    bru.setEnvVar("refreshToken", res.body.refreshToken);
+  }
+}
+
+docs {
+  Mint a Google ID token via the Google Sign-In playground or a
+  front-end SDK and paste it into the googleIdToken env var.
+  Requires OAUTH_GOOGLE_ENABLED=true and OAUTH_GOOGLE_CLIENT_ID set
+  to the same Web client id used by the front-end. First call creates
+  the customer (no password); subsequent calls return the same one.
+}

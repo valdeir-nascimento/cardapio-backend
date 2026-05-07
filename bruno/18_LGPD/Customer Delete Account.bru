@@ -1,0 +1,23 @@
+meta {
+  name: Customer Delete Account
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Anonimiza o cliente (LGPD). PII (nome, e-mail, telefone, senha,
+  identidades sociais) é apagada; uma marca deletedAt é gravada e o
+  e-mail vira deleted+<idShort>@cardapio.local para preservar a
+  unique constraint. Todos os refresh tokens da subject são
+  revogados imediatamente. Pedidos históricos permanecem.
+}

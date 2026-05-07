@@ -1,0 +1,36 @@
+meta {
+  name: Login (Apple)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/social/apple
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "idToken": "{{appleIdToken}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setEnvVar("accessToken", res.body.accessToken);
+    bru.setEnvVar("refreshToken", res.body.refreshToken);
+  }
+}
+
+docs {
+  Mint an Apple ID token via Sign in with Apple JS and paste into
+  appleIdToken. Requires OAUTH_APPLE_ENABLED=true and
+  OAUTH_APPLE_CLIENT_ID set to the Service ID (not the App ID).
+  Apple emits the email only on the first login — repeat logins
+  resolve via (provider, subject).
+}

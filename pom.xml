@@ -23,6 +23,10 @@
         <jjwt.version>0.12.6</jjwt.version>
         <zxing.version>3.5.3</zxing.version>
         <awssdk.version>2.29.20</awssdk.version>
+        <java-jwt.version>4.4.0</java-jwt.version>
+        <logstash-logback.version>8.0</logstash-logback.version>
+        <bucket4j.version>8.10.1</bucket4j.version>
+        <shedlock.version>5.16.0</shedlock.version>
     </properties>
 
     <dependencyManagement>
@@ -141,6 +145,49 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
             <version>${awssdk.version}</version>
+        </dependency>
+
+        <!-- JWT verification for social ID tokens (Google + Apple) -->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>${java-jwt.version}</version>
+        </dependency>
+
+        <!-- JSON-formatted logs (prod profile) -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash-logback.version}</version>
+        </dependency>
+
+        <!-- Prometheus exporter for /actuator/prometheus -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+        <!-- Rate limiting (Bucket4j + Caffeine in-memory backend) -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>${bucket4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
+        <!-- Distributed lock for the notification scheduler in multi-replica deployments -->
+        <dependency>
+            <groupId>net.javacrumbs.shedlock</groupId>
+            <artifactId>shedlock-spring</artifactId>
+            <version>${shedlock.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.javacrumbs.shedlock</groupId>
+            <artifactId>shedlock-provider-jdbc-template</artifactId>
+            <version>${shedlock.version}</version>
         </dependency>
 
         <!-- Test -->
