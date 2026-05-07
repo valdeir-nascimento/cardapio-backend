@@ -4,6 +4,7 @@ import com.cardapio.api.error.NotFoundException;
 import com.cardapio.api.error.NotificationException;
 import com.cardapio.api.error.UnauthorizedException;
 import com.cardapio.identity.application.command.LoginCommand;
+import com.cardapio.identity.application.command.LoginWithSocialIdentityCommand;
 import com.cardapio.identity.application.command.RefreshTokenCommand;
 import com.cardapio.identity.application.command.RegisterCustomerCommand;
 import com.cardapio.identity.application.command.UpdateProfileCommand;
@@ -20,6 +21,8 @@ public interface IdentityFacade {
     TokenPair loginCustomer(LoginCommand cmd) throws UnauthorizedException;
 
     TokenPair loginAdmin(LoginCommand cmd) throws UnauthorizedException;
+
+    TokenPair loginWithSocial(LoginWithSocialIdentityCommand cmd) throws UnauthorizedException;
 
     TokenPair refresh(RefreshTokenCommand cmd) throws UnauthorizedException;
 

@@ -4,6 +4,7 @@ import com.cardapio.api.error.NotFoundException;
 import com.cardapio.api.error.NotificationException;
 import com.cardapio.api.error.UnauthorizedException;
 import com.cardapio.identity.application.command.LoginCommand;
+import com.cardapio.identity.application.command.LoginWithSocialIdentityCommand;
 import com.cardapio.identity.application.command.RefreshTokenCommand;
 import com.cardapio.identity.application.command.RegisterCustomerCommand;
 import com.cardapio.identity.application.command.UpdateProfileCommand;
@@ -22,6 +23,7 @@ public class IdentityFacadeImpl implements IdentityFacade {
     private final RegisterCustomerUseCase register;
     private final LoginCustomerUseCase loginCustomer;
     private final LoginAdminUseCase loginAdmin;
+    private final LoginWithSocialIdentityUseCase loginWithSocial;
     private final RefreshTokenUseCase refresh;
     private final GetMyProfileUseCase getMy;
     private final UpdateMyProfileUseCase updateMy;
@@ -39,6 +41,11 @@ public class IdentityFacadeImpl implements IdentityFacade {
     @Override
     public TokenPair loginAdmin(LoginCommand cmd) {
         return loginAdmin.execute(cmd).orElseThrow(UnauthorizedException::new);
+    }
+
+    @Override
+    public TokenPair loginWithSocial(LoginWithSocialIdentityCommand cmd) {
+        return loginWithSocial.execute(cmd).orElseThrow(UnauthorizedException::new);
     }
 
     @Override
