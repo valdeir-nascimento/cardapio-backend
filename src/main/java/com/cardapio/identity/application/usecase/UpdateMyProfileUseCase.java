@@ -46,6 +46,7 @@ public class UpdateMyProfileUseCase {
         customer.updateProfile(cmd.name(), phone);
         customers.save(customer);
 
-        return Result.success(new CustomerProfile(customer.id(), customer.name(), customer.email().value(), customer.phoneNumber().value()));
+        return Result.success(new CustomerProfile(customer.id(), customer.name(), customer.email().value(),
+            customer.phoneNumber().map(PhoneNumber::value).orElse(null)));
     }
 }

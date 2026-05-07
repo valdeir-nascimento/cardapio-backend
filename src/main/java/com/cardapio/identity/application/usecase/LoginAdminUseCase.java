@@ -38,8 +38,8 @@ public class LoginAdminUseCase extends AbstractLoginUseCase<Admin> {
     }
 
     @Override
-    protected HashedPassword passwordOf(Admin u) {
-        return u.passwordHash();
+    protected Optional<HashedPassword> passwordOf(Admin u) {
+        return Optional.of(u.passwordHash());
     }
 
     @Override

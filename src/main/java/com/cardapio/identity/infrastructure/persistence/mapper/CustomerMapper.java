@@ -14,23 +14,27 @@ public final class CustomerMapper {
 
     public static CustomerJpaEntity toJpa(Customer c, Instant now) {
         return new CustomerJpaEntity(
-            c.id().value(), c.name(), c.email().value(), c.phoneNumber().value(),
-            c.passwordHash().value(), now, now);
+            c.id().value(), c.name(), c.email().value(),
+            c.phoneNumber().map(PhoneNumber::value).orElse(null),
+            c.passwordHash().map(HashedPassword::value).orElse(null),
+            now, now);
     }
 
     public static void updateJpa(CustomerJpaEntity entity, Customer c, Instant now) {
         entity.setName(c.name());
-        entity.setPhoneNumber(c.phoneNumber().value());
-        entity.setPasswordHash(c.passwordHash().value());
+        entity.setPhoneNumber(c.phoneNumber().map(PhoneNumber::value).orElse(null));
+        entity.setPasswordHash(c.passwordHash().map(HashedPassword::value).orElse(null));
         entity.setUpdatedAt(now);
     }
 
     public static Customer toDomain(CustomerJpaEntity e) {
+        PhoneNumber phone = e.getPhoneNumber() == null ? null : PhoneNumber.of(e.getPhoneNumber());
+        HashedPassword hash = e.getPasswordHash() == null ? null : new HashedPassword(e.getPasswordHash());
         return Customer.rehydrate(
             CustomerId.of(e.getId()),
             e.getName(),
             Email.of(e.getEmail()),
-            PhoneNumber.of(e.getPhoneNumber()),
-            new HashedPassword(e.getPasswordHash()));
+            phone,
+            hash);
     }
 }

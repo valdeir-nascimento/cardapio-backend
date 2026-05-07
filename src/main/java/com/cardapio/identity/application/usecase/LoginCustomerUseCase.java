@@ -38,7 +38,7 @@ public class LoginCustomerUseCase extends AbstractLoginUseCase<Customer> {
     }
 
     @Override
-    protected HashedPassword passwordOf(Customer u) {
+    protected Optional<HashedPassword> passwordOf(Customer u) {
         return u.passwordHash();
     }
 

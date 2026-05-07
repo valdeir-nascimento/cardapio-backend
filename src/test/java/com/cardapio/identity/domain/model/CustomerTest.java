@@ -41,7 +41,44 @@ class CustomerTest {
         customer.updateProfile("New Name", PhoneNumber.of("+5511987654321"));
 
         assertThat(customer.name()).isEqualTo("New Name");
-        assertThat(customer.phoneNumber().value()).isEqualTo("+5511987654321");
+        assertThat(customer.phoneNumber().orElseThrow().value()).isEqualTo("+5511987654321");
+    }
+
+    @Test
+    void registerSocialProducesCustomerWithoutPasswordOrPhone() {
+        SocialIdentity gid = new SocialIdentity(SocialProvider.GOOGLE, "g-1",
+            "bob@example.com", java.time.Instant.parse("2026-05-06T12:00:00Z"));
+
+        Customer customer = Customer.registerSocial("Bob", Email.of("bob@example.com"), gid);
+
+        assertThat(customer.passwordHash()).isEmpty();
+        assertThat(customer.phoneNumber()).isEmpty();
+        assertThat(customer.socialIdentities()).containsExactly(gid);
+        assertThat(customer.findSocialIdentity(SocialProvider.GOOGLE)).contains(gid);
+    }
+
+    @Test
+    void linkSocialIdentityIsIdempotentForExactMatchAndRejectsDifferentSubject() {
+        Customer customer = Customer.register(
+            "C", Email.of("c@x.com"), PhoneNumber.of("+5511912345678"), HashedPassword.of("$2a$12$x"));
+        java.time.Clock clock = java.time.Clock.fixed(java.time.Instant.parse("2026-05-06T12:00:00Z"), java.time.ZoneOffset.UTC);
+        SocialIdentity gid1 = new SocialIdentity(SocialProvider.GOOGLE, "g-1", "c@x.com", clock.instant());
+
+        customer.linkSocialIdentity(gid1, clock);
+        customer.linkSocialIdentity(gid1, clock); // exact dup → no-op
+
+        assertThat(customer.socialIdentities()).hasSize(1);
+
+        SocialIdentity gid2 = new SocialIdentity(SocialProvider.GOOGLE, "g-2", "c@x.com", clock.instant());
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> customer.linkSocialIdentity(gid2, clock))
+            .isInstanceOf(com.cardapio.identity.domain.exception.SocialIdentityAlreadyLinkedException.class);
+    }
+
+    @Test
+    void rehydrateRejectsCustomerWithNeitherPasswordNorSocial() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> Customer.rehydrate(
+            CustomerId.newId(), "X", Email.of("x@y.com"), null, null))
+            .isInstanceOf(com.cardapio.identity.domain.exception.CustomerWithoutAuthMethodException.class);
     }
 
     @Test
