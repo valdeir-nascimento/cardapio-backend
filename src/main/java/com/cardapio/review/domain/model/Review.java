@@ -34,9 +34,23 @@ public final class Review extends AggregateRoot<ReviewId> {
         return new Review(id, orderId, customerId, rating, comment, createdAt);
     }
 
-    public OrderId orderId() { return orderId; }
-    public UUID customerId() { return customerId; }
-    public Rating rating() { return rating; }
-    public Comment comment() { return comment; }
-    public Instant createdAt() { return createdAt; }
+    public OrderId orderId() {
+        return orderId;
+    }
+
+    public UUID customerId() {
+        return customerId;
+    }
+
+    public Rating rating() {
+        return rating;
+    }
+
+    public Comment comment() {
+        return comment;
+    }
+
+    public Instant createdAt() {
+        return createdAt;
+    }
 }
