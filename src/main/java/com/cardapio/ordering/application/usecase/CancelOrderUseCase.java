@@ -32,7 +32,8 @@ public class CancelOrderUseCase {
             return Result.failWith(ErrorCode.ORDER_INVALID_TRANSITION, e.getMessage());
         }
         orders.save(order);
-        events.publishEvent(OrderCanceled.of(order.id(), order.customerId(), order.updatedAt()));
+        events.publishEvent(OrderCanceled.of(order.id(), order.customerId(),
+            order.appliedCouponCode().orElse(null), order.updatedAt()));
         return Result.ok();
     }
 }

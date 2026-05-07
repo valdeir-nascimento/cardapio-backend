@@ -1,0 +1,15 @@
+meta {
+  name: Admin Deactivate Coupon
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/coupons/{{couponId}}/deactivate
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}

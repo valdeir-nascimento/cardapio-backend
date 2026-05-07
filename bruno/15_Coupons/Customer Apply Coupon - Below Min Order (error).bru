@@ -1,0 +1,30 @@
+meta {
+  name: Customer Apply Coupon - Below Min Order (error)
+  type: http
+  seq: 8
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/cart/coupon
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "code": "WELCOME10"
+  }
+}
+
+docs {
+  Espera 422 COUPON_BELOW_MIN_ORDER quando subtotal < minOrderValue.
+  Use cart com 1 item barato (< R$ 30).
+}

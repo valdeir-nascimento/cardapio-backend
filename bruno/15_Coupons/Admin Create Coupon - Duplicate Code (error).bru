@@ -1,0 +1,31 @@
+meta {
+  name: Admin Create Coupon - Duplicate Code (error)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/coupons
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminAccessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "code": "WELCOME10",
+    "type": "PERCENT",
+    "value": 5
+  }
+}
+
+docs {
+  Espera 422 com COUPON_CODE_TAKEN.
+}

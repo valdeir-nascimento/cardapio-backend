@@ -1,0 +1,25 @@
+meta {
+  name: Customer Apply Coupon - Not Found (error)
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/cart/coupon
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "code": "DOESNOTEXIST"
+  }
+}

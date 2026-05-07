@@ -14,10 +14,16 @@ public record OrderPlaced(
     OrderId orderId,
     UUID customerId,
     OrderModality modality,
-    Money total
+    Money total,
+    String couponCode
 ) implements DomainEvent {
 
     public static OrderPlaced of(OrderId orderId, UUID customerId, OrderModality modality, Money total, Instant occurredOn) {
-        return new OrderPlaced(UUID.randomUUID(), occurredOn, orderId, customerId, modality, total);
+        return of(orderId, customerId, modality, total, null, occurredOn);
+    }
+
+    public static OrderPlaced of(OrderId orderId, UUID customerId, OrderModality modality, Money total,
+                                 String couponCode, Instant occurredOn) {
+        return new OrderPlaced(UUID.randomUUID(), occurredOn, orderId, customerId, modality, total, couponCode);
     }
 }

@@ -27,12 +27,14 @@ public final class Order extends AggregateRoot<OrderId> {
     private final DeliveryAddress address;
     private final TableId tableId;
     private final ComandaId comandaId;
+    private final String appliedCouponCode;
     private final Instant placedAt;
     private Instant updatedAt;
 
     private Order(OrderId id, UUID customerId, OrderModality modality, OrderStatus status,
                   List<OrderItem> items, Money subtotal, Money deliveryFee, Money discount, Money total,
                   Optional<DeliveryAddress> address, Optional<TableId> tableId, Optional<ComandaId> comandaId,
+                  Optional<String> appliedCouponCode,
                   Instant placedAt, Instant updatedAt) {
         super(id);
         this.customerId = Objects.requireNonNull(customerId, "customerId");
@@ -46,9 +48,13 @@ public final class Order extends AggregateRoot<OrderId> {
         this.address = address.orElse(null);
         this.tableId = tableId.orElse(null);
         this.comandaId = comandaId.orElse(null);
+        this.appliedCouponCode = appliedCouponCode.orElse(null);
         this.placedAt = Objects.requireNonNull(placedAt, "placedAt");
         this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt");
         enforceModalityInvariants();
+        if (discount.amount().compareTo(subtotal.amount()) > 0) {
+            throw new IllegalArgumentException("discount cannot exceed subtotal");
+        }
     }
 
     private void enforceModalityInvariants() {
@@ -71,12 +77,20 @@ public final class Order extends AggregateRoot<OrderId> {
 
     public static Order place(UUID customerId, OrderModality modality, List<OrderItem> items,
                               Money deliveryFee, Optional<DeliveryAddress> address, Clock clock) {
-        return place(customerId, modality, items, deliveryFee, address, Optional.empty(), Optional.empty(), clock);
+        return place(customerId, modality, items, deliveryFee, address,
+            Optional.empty(), Optional.empty(), null, Optional.empty(), clock);
     }
 
     public static Order place(UUID customerId, OrderModality modality, List<OrderItem> items,
                               Money deliveryFee, Optional<DeliveryAddress> address,
                               Optional<TableId> tableId, Optional<ComandaId> comandaId, Clock clock) {
+        return place(customerId, modality, items, deliveryFee, address, tableId, comandaId, null, Optional.empty(), clock);
+    }
+
+    public static Order place(UUID customerId, OrderModality modality, List<OrderItem> items,
+                              Money deliveryFee, Optional<DeliveryAddress> address,
+                              Optional<TableId> tableId, Optional<ComandaId> comandaId,
+                              Money discount, Optional<String> appliedCouponCode, Clock clock) {
         if (items.isEmpty()) throw new IllegalArgumentException("order has no items");
         if (modality == OrderModality.DELIVERY && address.isEmpty()) {
             throw new IllegalArgumentException("delivery requires address");
@@ -87,25 +101,36 @@ public final class Order extends AggregateRoot<OrderId> {
         Currency currency = items.get(0).lineTotal().currency();
         Money zero = Money.of(java.math.BigDecimal.ZERO, currency);
         Money subtotal = items.stream().map(OrderItem::lineTotal).reduce(zero, Money::add);
-        Money total = subtotal.add(deliveryFee);
+        Money discountAmount = discount == null ? zero : discount;
+        Money total = subtotal.add(deliveryFee).subtract(discountAmount);
         Instant now = clock.instant();
         return new Order(OrderId.newId(), customerId, modality, OrderStatus.RECEIVED,
-            items, subtotal, deliveryFee, zero, total, address, tableId, comandaId, now, now);
+            items, subtotal, deliveryFee, discountAmount, total, address, tableId, comandaId,
+            appliedCouponCode, now, now);
     }
 
     public static Order rehydrate(OrderId id, UUID customerId, OrderModality modality, OrderStatus status,
                                   List<OrderItem> items, Money subtotal, Money deliveryFee, Money discount, Money total,
                                   Optional<DeliveryAddress> address, Instant placedAt, Instant updatedAt) {
         return rehydrate(id, customerId, modality, status, items, subtotal, deliveryFee, discount, total,
-            address, Optional.empty(), Optional.empty(), placedAt, updatedAt);
+            address, Optional.empty(), Optional.empty(), Optional.empty(), placedAt, updatedAt);
     }
 
     public static Order rehydrate(OrderId id, UUID customerId, OrderModality modality, OrderStatus status,
                                   List<OrderItem> items, Money subtotal, Money deliveryFee, Money discount, Money total,
                                   Optional<DeliveryAddress> address, Optional<TableId> tableId, Optional<ComandaId> comandaId,
                                   Instant placedAt, Instant updatedAt) {
+        return rehydrate(id, customerId, modality, status, items, subtotal, deliveryFee, discount, total,
+            address, tableId, comandaId, Optional.empty(), placedAt, updatedAt);
+    }
+
+    public static Order rehydrate(OrderId id, UUID customerId, OrderModality modality, OrderStatus status,
+                                  List<OrderItem> items, Money subtotal, Money deliveryFee, Money discount, Money total,
+                                  Optional<DeliveryAddress> address, Optional<TableId> tableId, Optional<ComandaId> comandaId,
+                                  Optional<String> appliedCouponCode,
+                                  Instant placedAt, Instant updatedAt) {
         return new Order(id, customerId, modality, status, items, subtotal, deliveryFee, discount, total,
-            address, tableId, comandaId, placedAt, updatedAt);
+            address, tableId, comandaId, appliedCouponCode, placedAt, updatedAt);
     }
 
     public void advance(OrderStatus next, Clock clock) {
@@ -135,6 +160,7 @@ public final class Order extends AggregateRoot<OrderId> {
     public Optional<DeliveryAddress> address() { return Optional.ofNullable(address); }
     public Optional<TableId> tableId() { return Optional.ofNullable(tableId); }
     public Optional<ComandaId> comandaId() { return Optional.ofNullable(comandaId); }
+    public Optional<String> appliedCouponCode() { return Optional.ofNullable(appliedCouponCode); }
     public Instant placedAt() { return placedAt; }
     public Instant updatedAt() { return updatedAt; }
 }

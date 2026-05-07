@@ -67,6 +67,15 @@ public enum ErrorCode {
     COMANDA_HAS_PENDING_ORDERS("comanda tem pedidos pendentes"),
     DINE_IN_CONTEXT_REQUIRED("pedido DINE_IN requer tableId e comandaId"),
 
+    // Promotion – Coupons
+    COUPON_NOT_FOUND("cupom não encontrado"),
+    COUPON_CODE_TAKEN("código de cupom já cadastrado"),
+    INVALID_COUPON("cupom inválido"),
+    COUPON_INACTIVE("cupom inativo"),
+    COUPON_EXPIRED("cupom expirado"),
+    COUPON_BELOW_MIN_ORDER("valor mínimo do pedido não atingido"),
+    COUPON_EXHAUSTED("cupom esgotou os usos"),
+
     // Payment
     PAYMENT_NOT_FOUND("pagamento não encontrado"),
     PAYMENT_ORDER_NOT_PAYABLE("pedido não está em estado pagável"),
