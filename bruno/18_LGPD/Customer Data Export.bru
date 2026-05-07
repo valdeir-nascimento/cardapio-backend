@@ -1,0 +1,26 @@
+meta {
+  name: Customer Data Export
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/me/data-export
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Retorna o JSON com os dados pessoais que o módulo identity guarda
+  do cliente: nome, e-mail, telefone, identidades sociais e o
+  carimbo deletedAt (se aplicável). O header Content-Disposition
+  ativa o download no navegador.
+
+  Order history e reviews são acessíveis pelos endpoints existentes
+  (GET /me/orders, GET /me/orders/{id}/review) — o front-end
+  consolida o export completo a partir dessas chamadas.
+}

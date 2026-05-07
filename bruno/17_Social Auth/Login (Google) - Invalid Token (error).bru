@@ -1,0 +1,25 @@
+meta {
+  name: Login (Google) - Invalid Token (error)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/social/google
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "idToken": "definitely.not.a.valid.token"
+  }
+}
+
+docs {
+  Espera 401 com INVALID_ID_TOKEN.
+}

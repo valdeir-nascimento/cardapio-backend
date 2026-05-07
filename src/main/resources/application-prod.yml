@@ -20,10 +20,15 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       show-details: never
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: cardapio-backend
 
 server:
   forward-headers-strategy: framework

@@ -2,6 +2,7 @@ package com.cardapio.identity.infrastructure.persistence.adapter;
 
 import com.cardapio.identity.domain.model.Customer;
 import com.cardapio.identity.domain.model.CustomerId;
+import com.cardapio.identity.domain.model.SocialProvider;
 import com.cardapio.identity.domain.port.CustomerRepository;
 import com.cardapio.identity.infrastructure.persistence.mapper.CustomerMapper;
 import com.cardapio.identity.infrastructure.persistence.repository.SpringCustomerJpaRepository;
@@ -43,5 +44,10 @@ public class CustomerRepositoryAdapter implements CustomerRepository {
     @Override
     public boolean existsByEmail(Email email) {
         return jpa.existsByEmail(email.value());
+    }
+
+    @Override
+    public Optional<Customer> findBySocialIdentity(SocialProvider provider, String subject) {
+        return jpa.findBySocialIdentity(provider.name(), subject).map(CustomerMapper::toDomain);
     }
 }

@@ -83,6 +83,13 @@ public enum ErrorCode {
     INVALID_RATING("rating inválido"),
     INVALID_COMMENT("comentário inválido"),
 
+    // Identity – Social login
+    INVALID_ID_TOKEN("token de identidade inválido"),
+    SOCIAL_LOGIN_PROVIDER_UNAVAILABLE("provedor de login social indisponível"),
+    SOCIAL_IDENTITY_ALREADY_LINKED("este provedor já está vinculado a outra conta"),
+    SOCIAL_LOGIN_EMAIL_REQUIRED("e-mail do provedor é obrigatório no primeiro login"),
+    ACCOUNT_ALREADY_DELETED("conta já está apagada"),
+
     // Payment
     PAYMENT_NOT_FOUND("pagamento não encontrado"),
     PAYMENT_ORDER_NOT_PAYABLE("pedido não está em estado pagável"),

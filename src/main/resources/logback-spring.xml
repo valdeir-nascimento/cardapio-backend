@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Dev / test: human-readable text with MDC values inlined. -->
+    <springProfile name="dev,test,default">
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [req:%X{requestId:--}] [cust:%X{customerId:--}] %logger{36} - %msg%n</pattern>
+            </encoder>
+        </appender>
+        <root level="INFO">
+            <appender-ref ref="STDOUT"/>
+        </root>
+        <logger name="com.cardapio" level="DEBUG"/>
+    </springProfile>
+
+    <!-- Production: JSON via Logstash encoder so log shippers can index fields. -->
+    <springProfile name="prod">
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <customFields>{"app":"cardapio-backend"}</customFields>
+                <includeMdcKeyName>requestId</includeMdcKeyName>
+                <includeMdcKeyName>customerId</includeMdcKeyName>
+                <includeMdcKeyName>correlationId</includeMdcKeyName>
+            </encoder>
+        </appender>
+        <root level="INFO">
+            <appender-ref ref="STDOUT"/>
+        </root>
+        <logger name="com.cardapio" level="INFO"/>
+    </springProfile>
+</configuration>

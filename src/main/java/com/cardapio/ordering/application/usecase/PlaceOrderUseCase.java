@@ -24,6 +24,7 @@ import com.cardapio.shared.domain.ErrorCode;
 import com.cardapio.shared.domain.Money;
 import com.cardapio.shared.domain.Notification;
 import com.cardapio.shared.domain.Result;
+import com.cardapio.shared.metrics.DomainMetrics;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,7 @@ public class PlaceOrderUseCase {
     private final ComandaRepository comandas;
     private final CouponPricingPort couponPricing;
     private final ApplicationEventPublisher events;
+    private final DomainMetrics metrics;
     private final Clock clock;
 
     @Transactional
@@ -162,6 +164,7 @@ public class PlaceOrderUseCase {
             order.id(), order.customerId(), order.modality(), order.total(),
             order.appliedCouponCode().orElse(null), order.placedAt()));
 
+        metrics.countOrderPlaced(order.modality().name());
         return Result.success(toPlacedView(order));
     }
 
