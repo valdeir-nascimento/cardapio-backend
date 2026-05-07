@@ -1,0 +1,29 @@
+meta {
+  name: Customer Login After Delete (error)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{customerEmail}}",
+    "password": "{{customerPassword}}"
+  }
+}
+
+docs {
+  Após DELETE /me, login com as credenciais antigas devolve 401
+  INVALID_CREDENTIALS — o use case filtra customers com isDeleted()
+  no findByEmail antes de comparar a senha (que foi anulada de
+  qualquer maneira).
+}
