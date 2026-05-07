@@ -24,6 +24,7 @@
         <zxing.version>3.5.3</zxing.version>
         <awssdk.version>2.29.20</awssdk.version>
         <java-jwt.version>4.4.0</java-jwt.version>
+        <logstash-logback.version>8.0</logstash-logback.version>
     </properties>
 
     <dependencyManagement>
@@ -149,6 +150,13 @@
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>${java-jwt.version}</version>
+        </dependency>
+
+        <!-- JSON-formatted logs (prod profile) -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash-logback.version}</version>
         </dependency>
 
         <!-- Test -->
