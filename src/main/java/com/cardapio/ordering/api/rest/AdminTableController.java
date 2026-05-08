@@ -12,11 +12,14 @@ import com.cardapio.ordering.application.usecase.ListTablesUseCase;
 import com.cardapio.ordering.domain.model.TableId;
 import com.cardapio.shared.domain.Notification;
 import com.cardapio.shared.domain.Result;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
@@ -26,25 +29,28 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/tables")
 @PreAuthorize("hasAnyRole('OWNER','MANAGER','OPERATOR')")
-public class AdminTableController {
+public class AdminTableController implements AdminTableApi {
 
     private final CreateTableUseCase createTable;
     private final ListTablesUseCase listTables;
     private final GetTableQrUseCase getTableQr;
 
+    @Override
     @PostMapping
-    public ResponseEntity<TableResponse> create(@Valid @RequestBody CreateTableRequest body) {
+    public ResponseEntity<TableResponse> create(CreateTableRequest body) {
         var view = unwrap(createTable.execute(new CreateTableCommand(body.number())));
         return ResponseEntity
             .created(URI.create("/api/v1/admin/tables/" + view.id().value()))
             .body(TableResponse.from(view));
     }
 
+    @Override
     @GetMapping
     public List<TableResponse> list() {
         return listTables.execute().stream().map(TableResponse::from).toList();
     }
 
+    @Override
     @GetMapping("/{id}/qr")
     public TableQrResponse qr(@PathVariable UUID id) {
         var view = unwrap(getTableQr.execute(TableId.of(id)));

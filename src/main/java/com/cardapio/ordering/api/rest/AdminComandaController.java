@@ -23,11 +23,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/comandas")
 @PreAuthorize("hasAnyRole('OWNER','MANAGER','OPERATOR')")
-public class AdminComandaController {
+public class AdminComandaController implements AdminComandaApi {
 
     private final ComandaRepository comandas;
     private final CloseComandaUseCase closeComanda;
 
+    @Override
     @GetMapping
     public List<ComandaResponse> list(@RequestParam(defaultValue = "OPEN") ComandaStatus status) {
         return comandas.findByStatus(status).stream()
@@ -35,6 +36,7 @@ public class AdminComandaController {
             .toList();
     }
 
+    @Override
     @PostMapping("/{id}/close")
     public ComandaResponse close(@PathVariable UUID id) {
         var view = unwrap(closeComanda.execute(new CloseComandaCommand(ComandaId.of(id))));

@@ -6,6 +6,7 @@ import com.cardapio.catalog.application.CatalogFacade;
 import com.cardapio.catalog.application.command.CreateCategoryCommand;
 import com.cardapio.catalog.application.command.UpdateCategoryCommand;
 import com.cardapio.catalog.domain.model.CategoryId;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,7 +41,7 @@ public class CategoryAdminController implements CategoryAdminApi {
 
     @Override
     @PostMapping
-    public ResponseEntity<CategoryResponse> create(CategoryRequest req) {
+    public ResponseEntity<CategoryResponse> create(@Valid CategoryRequest req) {
         CategoryId id = catalog.createCategory(new CreateCategoryCommand(req.name(), req.displayOrder()));
         return ResponseEntity
             .created(URI.create("/api/v1/admin/categories/" + id.value()))
@@ -49,7 +50,7 @@ public class CategoryAdminController implements CategoryAdminApi {
 
     @Override
     @PutMapping("/{id}")
-    public CategoryResponse update(@PathVariable UUID id, CategoryRequest req) {
+    public CategoryResponse update(@PathVariable UUID id, @Valid CategoryRequest req) {
         boolean active = Objects.requireNonNullElse(req.active(), true);
         catalog.updateCategory(new UpdateCategoryCommand(CategoryId.of(id), req.name(), req.displayOrder(), active));
         return new CategoryResponse(id, req.name(), req.displayOrder(), active);

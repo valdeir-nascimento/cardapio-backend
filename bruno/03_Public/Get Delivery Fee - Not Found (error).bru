@@ -1,11 +1,12 @@
 meta {
-  name: Get Delivery Fee - Not Served (error)
+  name: Get Delivery Fee - Not Found (error)
   type: http
   seq: 7
 }
 
 get {
   url: {{baseUrl}}/api/v1/delivery/fee?neighborhoodId=00000000-0000-0000-0000-000000000000
+  body: none
   auth: none
 }
 

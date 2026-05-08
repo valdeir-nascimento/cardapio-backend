@@ -2,6 +2,14 @@ package com.cardapio.ordering.api;
 
 import com.cardapio.ordering.infrastructure.qr.FilesystemQrProperties;
 import com.cardapio.ordering.infrastructure.qr.FilesystemQrStorage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -25,16 +33,39 @@ import static com.cardapio.ordering.infrastructure.qr.QrSignedUrl.verify;
 @RequestMapping("/api/v1/qr")
 @ConditionalOnProperty(prefix = "r2", name = "enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
+@Tag(name = "Ordering — QR Image",
+    description = "Serve as imagens PNG dos QR Codes das mesas via URL assinada com TTL.")
+@SecurityRequirements
 class QrImageController {
 
     private final FilesystemQrStorage storage;
     private final FilesystemQrProperties props;
     private final Clock clock;
 
+    @Operation(summary = "Serve a imagem PNG do QR Code da mesa",
+        description = """
+            Endpoint público acessado pela URL gerada por
+            `GET /api/v1/admin/tables/{id}/qr` (campo `presignedUrl`).
+            Não chame diretamente — sempre passe pelo gerador de URL para ter
+            os parâmetros `exp` (expiração) e `sig` (HMAC-SHA256).
+            """)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Imagem PNG retornada.",
+            content = @Content(mediaType = "image/png",
+                schema = @Schema(type = "string", format = "binary"))),
+        @ApiResponse(responseCode = "403", description = "Assinatura inválida.",
+            content = @Content),
+        @ApiResponse(responseCode = "404", description = "Arquivo não encontrado.",
+            content = @Content),
+        @ApiResponse(responseCode = "410", description = "URL expirou — gere uma nova.",
+            content = @Content)
+    })
     @GetMapping("/**")
     ResponseEntity<byte[]> serve(
-        HttpServletRequest req,
+        @Parameter(hidden = true) HttpServletRequest req,
+        @Parameter(description = "Timestamp UNIX (segundos) de expiração da URL.", example = "1762812800")
         @RequestParam long exp,
+        @Parameter(description = "Assinatura HMAC-SHA256 base64-url do path + exp.", example = "abc123def456")
         @RequestParam String sig
     ) throws IOException {
         String path = req.getRequestURI();

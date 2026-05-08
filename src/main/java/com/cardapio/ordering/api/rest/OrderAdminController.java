@@ -8,11 +8,16 @@ import com.cardapio.ordering.application.command.AdvanceOrderStatusCommand;
 import com.cardapio.ordering.application.command.CancelOrderCommand;
 import com.cardapio.ordering.domain.model.OrderId;
 import com.cardapio.ordering.domain.model.OrderStatus;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,10 +27,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/orders")
 @PreAuthorize("hasAnyRole('OWNER','MANAGER','OPERATOR')")
-public class OrderAdminController {
+public class OrderAdminController implements OrderAdminApi {
 
     private final OrderingFacade ordering;
 
+    @Override
     @GetMapping
     public List<OrderSummaryResponse> list(
         @RequestParam(required = false) OrderStatus status,
@@ -38,17 +44,20 @@ public class OrderAdminController {
             .map(OrderSummaryResponse::from).toList();
     }
 
+    @Override
     @GetMapping("/{id}")
     public OrderResponse get(@PathVariable UUID id) {
         return OrderResponse.from(ordering.getOrderAdmin(OrderId.of(id)));
     }
 
+    @Override
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> advance(@PathVariable UUID id, @Valid @RequestBody AdvanceStatusRequest body) {
+    public ResponseEntity<Void> advance(@PathVariable UUID id, AdvanceStatusRequest body) {
         ordering.advanceStatus(new AdvanceOrderStatusCommand(OrderId.of(id), body.status()));
         return ResponseEntity.noContent().build();
     }
 
+    @Override
     @PostMapping("/{id}/cancel")
     @PreAuthorize("hasAnyRole('OWNER','MANAGER')")
     public ResponseEntity<Void> cancel(@PathVariable UUID id) {

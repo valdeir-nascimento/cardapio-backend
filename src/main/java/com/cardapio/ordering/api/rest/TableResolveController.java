@@ -17,10 +17,11 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/tables")
-public class TableResolveController {
+public class TableResolveController implements TableResolveApi {
 
     private final ResolveTableTokenUseCase resolveTableToken;
 
+    @Override
     @GetMapping("/resolve")
     public ResolveTableResponse resolve(@RequestParam UUID token) {
         var view = unwrap(resolveTableToken.execute(token));

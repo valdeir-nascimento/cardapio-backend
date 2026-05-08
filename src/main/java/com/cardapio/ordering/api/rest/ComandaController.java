@@ -15,7 +15,6 @@ import com.cardapio.ordering.domain.model.TableId;
 import com.cardapio.ordering.domain.port.ComandaRepository;
 import com.cardapio.shared.domain.Notification;
 import com.cardapio.shared.domain.Result;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,22 +28,24 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/comandas")
 @PreAuthorize("hasRole('CUSTOMER')")
-public class ComandaController {
+public class ComandaController implements ComandaApi {
 
     private final OpenComandaUseCase openComanda;
     private final JoinComandaUseCase joinComanda;
     private final ComandaRepository comandas;
 
+    @Override
     @PostMapping
     public ResponseEntity<ComandaResponse> open(
         @AuthenticationPrincipal CardapioPrincipal me,
-        @Valid @RequestBody OpenComandaRequest body
+        OpenComandaRequest body
     ) {
         var view = unwrap(openComanda.execute(new OpenComandaCommand(TableId.of(body.tableId()), me.subject())));
         return ResponseEntity.created(URI.create("/api/v1/comandas/" + view.id().value()))
             .body(ComandaResponse.from(view));
     }
 
+    @Override
     @PostMapping("/{id}/join")
     public ComandaResponse join(
         @AuthenticationPrincipal CardapioPrincipal me,
@@ -54,6 +55,7 @@ public class ComandaController {
         return ComandaResponse.from(view);
     }
 
+    @Override
     @GetMapping("/{id}")
     public ComandaResponse get(
         @AuthenticationPrincipal CardapioPrincipal me,
