@@ -2,11 +2,10 @@ package com.cardapio.notification.infrastructure.whatsapp;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "zapi")
-public record ZapiProperties(
+@ConfigurationProperties(prefix = "wppconnect")
+public record WppConnectProperties(
     boolean enabled,
-    String instanceId,
+    String session,
     String token,
-    String clientToken,
     String baseUrl
 ) {}

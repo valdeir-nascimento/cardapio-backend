@@ -8,14 +8,14 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 
 @Configuration
-@ConditionalOnProperty(name = "zapi.enabled", havingValue = "true")
-class ZapiConfig {
+@ConditionalOnProperty(name = "wppconnect.enabled", havingValue = "true")
+class WppConnectConfig {
 
-    @Bean("zapiRestClient")
-    RestClient zapiRestClient(ZapiProperties props) {
+    @Bean("wppconnectRestClient")
+    RestClient wppconnectRestClient(WppConnectProperties props) {
         return RestClient.builder()
             .baseUrl(props.baseUrl())
-            .defaultHeader("Client-Token", props.clientToken())
+            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + props.token())
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
     }

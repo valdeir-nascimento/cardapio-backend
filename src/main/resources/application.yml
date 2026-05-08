@@ -34,12 +34,11 @@ resend:
   from: ${RESEND_FROM:no-reply@cardapio.local}
   base-url: ${RESEND_BASE_URL:https://api.resend.com}
 
-zapi:
-  enabled: ${ZAPI_ENABLED:false}
-  instance-id: ${ZAPI_INSTANCE:dummy}
-  token: ${ZAPI_TOKEN:dummy}
-  client-token: ${ZAPI_CLIENT_TOKEN:dummy}
-  base-url: ${ZAPI_BASE_URL:https://api.z-api.io}
+wppconnect:
+  enabled: ${WPPCONNECT_ENABLED:false}
+  session: ${WPPCONNECT_SESSION:cardapio}
+  token: ${WPPCONNECT_TOKEN:dummy}
+  base-url: ${WPPCONNECT_BASE_URL:http://localhost:21465}
 
 r2:
   enabled: ${R2_ENABLED:false}
@@ -106,7 +105,7 @@ resilience4j:
         timeout-duration: 5s
       resend:
         timeout-duration: 5s
-      zapi:
+      wppconnect:
         timeout-duration: 5s
   retry:
     instances:
@@ -122,7 +121,7 @@ resilience4j:
         exponential-backoff-multiplier: 2
         retry-exceptions:
           - java.io.IOException
-      zapi:
+      wppconnect:
         max-attempts: 3
         wait-duration: 1s
         exponential-backoff-multiplier: 2
@@ -140,7 +139,7 @@ resilience4j:
         minimum-number-of-calls: 10
         failure-rate-threshold: 50
         wait-duration-in-open-state: 30s
-      zapi:
+      wppconnect:
         sliding-window-size: 10
         minimum-number-of-calls: 10
         failure-rate-threshold: 50

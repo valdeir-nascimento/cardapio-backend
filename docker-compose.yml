@@ -16,5 +16,21 @@ services:
       timeout: 5s
       retries: 5
 
+  wppconnect:
+    image: wppconnect/server-cli:latest
+    container_name: cardapio-wppconnect
+    command: >
+      --secretKey ${WPPCONNECT_SECRET_KEY:-THISISMYSECURETOKEN}
+      --host 0.0.0.0
+      --port 21465
+    ports:
+      - "21465:21465"
+    volumes:
+      - cardapio-wpp-tokens:/usr/src/server-cli/tokens
+      - cardapio-wpp-userdata:/usr/src/server-cli/userDataDir
+    restart: unless-stopped
+
 volumes:
   cardapio-pg:
+  cardapio-wpp-tokens:
+  cardapio-wpp-userdata:

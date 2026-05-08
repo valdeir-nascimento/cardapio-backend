@@ -25,12 +25,11 @@ resend:
   from: test@cardapio.local
   base-url: https://api.resend.com
 
-zapi:
+wppconnect:
   enabled: false
-  instance-id: test
+  session: test
   token: test
-  client-token: test
-  base-url: https://api.z-api.io
+  base-url: http://localhost:21465
 
 notification:
   dispatch:

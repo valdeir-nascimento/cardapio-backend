@@ -100,7 +100,7 @@ public class DispatchOutboxUseCase {
     private void sendWhatsApp(NotificationTemplate template, Payload payload) {
         WhatsAppSender sender = whatsAppSender.getIfAvailable();
         if (sender == null) {
-            throw new IllegalStateException("WhatsAppSender not configured (zapi.enabled=false)");
+            throw new IllegalStateException("WhatsAppSender not configured (wppconnect.enabled=false)");
         }
         String body = renderer.renderWhatsApp(template, payload.model());
         sender.sendText(payload.to(), body);
@@ -129,7 +129,7 @@ public class DispatchOutboxUseCase {
     public static String channelToProvider(NotificationChannel c) {
         return switch (c) {
             case EMAIL -> "resend";
-            case WHATSAPP -> "zapi";
+            case WHATSAPP -> "wppconnect";
             default -> "n/a";
         };
     }

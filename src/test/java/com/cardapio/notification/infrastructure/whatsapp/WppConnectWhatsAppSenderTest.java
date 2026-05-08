@@ -16,25 +16,29 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-class ZapiWhatsAppSenderTest {
+class WppConnectWhatsAppSenderTest {
+
+    private static final String BASE_URL = "http://localhost:21465";
+    private static final String SEND_URL = BASE_URL + "/api/cardapio/send-message";
 
     private RestClient.Builder builder;
     private MockRestServiceServer server;
-    private ZapiWhatsAppSender sender;
+    private WppConnectWhatsAppSender sender;
 
     @BeforeEach
     void setUp() {
-        builder = RestClient.builder().baseUrl("https://api.z-api.io");
+        builder = RestClient.builder().baseUrl(BASE_URL);
         server = MockRestServiceServer.bindTo(builder).build();
-        ZapiProperties props = new ZapiProperties(true, "INST", "TOK", "CLI", "https://api.z-api.io");
-        sender = new ZapiWhatsAppSender(builder.build(), props);
+        WppConnectProperties props = new WppConnectProperties(true, "cardapio", "TOK", BASE_URL);
+        sender = new WppConnectWhatsAppSender(builder.build(), props);
     }
 
     @Test
-    void sendsToInstanceTokenEndpoint() {
-        server.expect(requestTo("https://api.z-api.io/instances/INST/token/TOK/send-text"))
+    void sendsToSessionEndpoint() {
+        server.expect(requestTo(SEND_URL))
             .andExpect(method(org.springframework.http.HttpMethod.POST))
             .andExpect(jsonPath("$.phone").value("5511999998888"))
+            .andExpect(jsonPath("$.isGroup").value(false))
             .andExpect(jsonPath("$.message").value("oi"))
             .andRespond(withSuccess());
 
@@ -45,35 +49,35 @@ class ZapiWhatsAppSenderTest {
 
     @Test
     void normalizesPunctuationFromPhone() {
-        assertThat(ZapiWhatsAppSender.normalize("+55 (11) 99999-8888")).isEqualTo("5511999998888");
-        assertThat(ZapiWhatsAppSender.normalize("5511999998888")).isEqualTo("5511999998888");
+        assertThat(WppConnectWhatsAppSender.normalize("+55 (11) 99999-8888")).isEqualTo("5511999998888");
+        assertThat(WppConnectWhatsAppSender.normalize("5511999998888")).isEqualTo("5511999998888");
     }
 
     @Test
     void rejectsBlankPhone() {
-        assertThatThrownBy(() -> ZapiWhatsAppSender.normalize(""))
+        assertThatThrownBy(() -> WppConnectWhatsAppSender.normalize(""))
             .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> ZapiWhatsAppSender.normalize("---"))
+        assertThatThrownBy(() -> WppConnectWhatsAppSender.normalize("---"))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void mapsServerErrorTo5xxCode() {
-        server.expect(requestTo("https://api.z-api.io/instances/INST/token/TOK/send-text"))
+        server.expect(requestTo(SEND_URL))
             .andRespond(withServerError().body("boom"));
 
         assertThatThrownBy(() -> sender.sendText("+5511999998888", "x"))
             .isInstanceOf(NotificationDispatchException.class)
-            .satisfies(e -> assertThat(((NotificationDispatchException) e).code()).isEqualTo("ZAPI_5XX"));
+            .satisfies(e -> assertThat(((NotificationDispatchException) e).code()).isEqualTo("WPPCONNECT_5XX"));
     }
 
     @Test
     void mapsClientErrorTo4xxCode() {
-        server.expect(requestTo("https://api.z-api.io/instances/INST/token/TOK/send-text"))
+        server.expect(requestTo(SEND_URL))
             .andRespond(withStatus(HttpStatus.UNAUTHORIZED).body("nope"));
 
         assertThatThrownBy(() -> sender.sendText("+5511999998888", "x"))
             .isInstanceOf(NotificationDispatchException.class)
-            .satisfies(e -> assertThat(((NotificationDispatchException) e).code()).isEqualTo("ZAPI_4XX"));
+            .satisfies(e -> assertThat(((NotificationDispatchException) e).code()).isEqualTo("WPPCONNECT_4XX"));
     }
 }

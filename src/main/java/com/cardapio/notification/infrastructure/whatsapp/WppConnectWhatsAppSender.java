@@ -14,28 +14,29 @@ import org.springframework.web.client.RestClientResponseException;
 import java.util.Map;
 
 @Component
-@ConditionalOnProperty(name = "zapi.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "wppconnect.enabled", havingValue = "true")
 @Slf4j
-class ZapiWhatsAppSender implements WhatsAppSender {
+class WppConnectWhatsAppSender implements WhatsAppSender {
 
     private final RestClient client;
-    private final ZapiProperties props;
+    private final WppConnectProperties props;
 
-    ZapiWhatsAppSender(@Qualifier("zapiRestClient") RestClient client, ZapiProperties props) {
+    WppConnectWhatsAppSender(@Qualifier("wppconnectRestClient") RestClient client, WppConnectProperties props) {
         this.client = client;
         this.props = props;
     }
 
-    @Retry(name = "zapi")
-    @CircuitBreaker(name = "zapi")
+    @Retry(name = "wppconnect")
+    @CircuitBreaker(name = "wppconnect")
     @Override
     public void sendText(String phoneE164, String body) {
         String phone = normalize(phoneE164);
         Map<String, Object> payload = Map.of(
             "phone", phone,
+            "isGroup", false,
             "message", body
         );
-        String uri = "/instances/" + props.instanceId() + "/token/" + props.token() + "/send-text";
+        String uri = "/api/" + props.session() + "/send-message";
         try {
             client.post()
                 .uri(uri)
@@ -45,18 +46,18 @@ class ZapiWhatsAppSender implements WhatsAppSender {
         } catch (RestClientResponseException e) {
             int status = e.getStatusCode().value();
             String responseBody = e.getResponseBodyAsString();
-            log.warn("zapi send failed status={} body={}", status, responseBody);
+            log.warn("wppconnect send failed status={} body={}", status, responseBody);
             throw new NotificationDispatchException(
-                status >= 500 ? "ZAPI_5XX" : "ZAPI_4XX",
-                "Z-API returned status " + status + ": " + responseBody,
+                status >= 500 ? "WPPCONNECT_5XX" : "WPPCONNECT_4XX",
+                "WPPConnect returned status " + status + ": " + responseBody,
                 e);
         } catch (Exception e) {
-            throw new NotificationDispatchException("ZAPI_TRANSPORT", e.getMessage(), e);
+            throw new NotificationDispatchException("WPPCONNECT_TRANSPORT", e.getMessage(), e);
         }
     }
 
     /**
-     * Z-API expects digits only (e.g. {@code 5511999998888}). Strips '+',
+     * WPPConnect expects digits only (e.g. {@code 5511999998888}). Strips '+',
      * spaces, dashes, and parentheses from the supplied E.164 number.
      */
     static String normalize(String phoneE164) {

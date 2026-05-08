@@ -66,7 +66,7 @@ Padrão dev usa defaults inofensivos; em staging/prod, exporte:
 |---|---|
 | `MP_ENABLED` / `MP_ACCESS_TOKEN` / `MP_WEBHOOK_SECRET` | Gateway Mercado Pago (Phase 3) |
 | `RESEND_ENABLED` / `RESEND_API_KEY` / `RESEND_FROM` | E-mail via Resend (Phase 4) |
-| `ZAPI_ENABLED` / `ZAPI_INSTANCE` / `ZAPI_TOKEN` / `ZAPI_CLIENT_TOKEN` | WhatsApp via Z-API (Phase 4) |
+| `WPPCONNECT_ENABLED` / `WPPCONNECT_SESSION` / `WPPCONNECT_TOKEN` / `WPPCONNECT_BASE_URL` | WhatsApp via WPPConnect Server (Phase 4) |
 | `NOTIFICATION_DISPATCH_ENABLED` | Habilita o worker que drena o outbox de notificações (default `true`) |
 
 ## Convenções
