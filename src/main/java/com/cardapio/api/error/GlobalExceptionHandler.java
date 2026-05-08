@@ -53,10 +53,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ProblemDetail> handleBeanValidation(MethodArgumentNotValidException ex) {
         List<Map<String, Object>> errors = ex.getBindingResult().getFieldErrors().stream()
-            .<Map<String, Object>>map(fe -> Map.of(
-                "field", fe.getField(),
-                "code", fe.getCode() == null ? "INVALID" : fe.getCode().toUpperCase(),
-                "message", fe.getDefaultMessage() == null ? "valor inválido" : fe.getDefaultMessage()))
+            .<Map<String, Object>>map(fe -> {
+                String code = fe.getCode() == null ? "INVALID" : fe.getCode().toUpperCase();
+                return Map.of(
+                    "field", fe.getField(),
+                    "code", code,
+                    "message", ValidationMessages.humanize(fe.getField(), code, fe.getArguments(), fe.getDefaultMessage()));
+            })
             .toList();
         log.info("bean validation failed: {}", errors);
         return ResponseEntity.badRequest().body(ProblemDetails.validation(errors));
@@ -65,13 +68,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ProblemDetail> handleConstraintViolation(ConstraintViolationException ex) {
         List<Map<String, Object>> errors = ex.getConstraintViolations().stream()
-            .<Map<String, Object>>map(v -> Map.of(
-                "field", v.getPropertyPath().toString(),
-                "code", v.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName().toUpperCase(),
-                "message", v.getMessage()))
+            .<Map<String, Object>>map(v -> {
+                String field = lastSegment(v.getPropertyPath().toString());
+                String code = v.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName().toUpperCase();
+                return Map.of(
+                    "field", field,
+                    "code", code,
+                    "message", ValidationMessages.humanize(field, code, null, v.getMessage()));
+            })
             .toList();
         log.info("constraint violation: {}", errors);
         return ResponseEntity.badRequest().body(ProblemDetails.validation(errors));
+    }
+
+    private static String lastSegment(String path) {
+        int dot = path.lastIndexOf('.');
+        return dot < 0 ? path : path.substring(dot + 1);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
