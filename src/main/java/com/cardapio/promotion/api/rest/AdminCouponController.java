@@ -13,11 +13,16 @@ import com.cardapio.promotion.application.usecase.UpdateCouponUseCase;
 import com.cardapio.promotion.domain.model.CouponId;
 import com.cardapio.shared.domain.Notification;
 import com.cardapio.shared.domain.Result;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
@@ -27,33 +32,37 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/coupons")
 @PreAuthorize("hasAnyRole('OWNER','MANAGER')")
-public class AdminCouponController {
+public class AdminCouponController implements AdminCouponApi {
 
     private final CreateCouponUseCase createCoupon;
     private final UpdateCouponUseCase updateCoupon;
     private final DeactivateCouponUseCase deactivateCoupon;
     private final ListCouponsUseCase listCoupons;
 
+    @Override
     @PostMapping
-    public ResponseEntity<CouponResponse> create(@Valid @RequestBody CreateCouponRequest body) {
+    public ResponseEntity<CouponResponse> create(CreateCouponRequest body) {
         var view = unwrap(createCoupon.execute(body.toCommand()));
         return ResponseEntity
             .created(URI.create("/api/v1/admin/coupons/" + view.id().value()))
             .body(CouponResponse.from(view));
     }
 
+    @Override
     @PatchMapping("/{id}")
-    public CouponResponse update(@PathVariable UUID id, @Valid @RequestBody UpdateCouponRequest body) {
+    public CouponResponse update(@PathVariable UUID id, UpdateCouponRequest body) {
         var cmd = new UpdateCouponCommand(CouponId.of(id),
             body.value(), body.validUntil(), body.minOrderValue(), body.maxUses());
         return CouponResponse.from(unwrap(updateCoupon.execute(cmd)));
     }
 
+    @Override
     @PostMapping("/{id}/deactivate")
     public CouponResponse deactivate(@PathVariable UUID id) {
         return CouponResponse.from(unwrap(deactivateCoupon.execute(CouponId.of(id))));
     }
 
+    @Override
     @GetMapping
     public List<CouponResponse> list(
         @RequestParam(defaultValue = "false") boolean activeOnly,
