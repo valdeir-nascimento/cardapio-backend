@@ -51,6 +51,11 @@ r2:
 qr:
   size-px: ${QR_SIZE_PX:512}
   presigned-url-ttl-seconds: ${QR_PRESIGNED_URL_TTL_SECONDS:600}
+  storage:
+    type: ${QR_STORAGE_TYPE:filesystem}
+    path: ${QR_STORAGE_PATH:./data/qr}
+    public-base-url: ${QR_PUBLIC_BASE_URL:http://localhost:8080}
+    signing-secret: ${QR_SIGNING_SECRET:dev-qr-signing-secret-change-me}
 
 oauth:
   google:
