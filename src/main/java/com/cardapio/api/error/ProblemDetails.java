@@ -40,6 +40,15 @@ public final class ProblemDetails {
         return pd;
     }
 
+    public static ProblemDetail validation(List<Map<String, Object>> errors) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        pd.setType(URI.create(TYPE_BASE + "validation-failed"));
+        pd.setTitle("Campos inválidos");
+        pd.setDetail("Um ou mais campos da requisição não passaram na validação");
+        pd.setProperty("errors", errors);
+        return pd;
+    }
+
     public static ProblemDetail unexpected() {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         pd.setType(URI.create(TYPE_BASE + "internal"));
