@@ -13,12 +13,15 @@ import com.cardapio.review.application.usecase.GetMyReviewableOrdersUseCase;
 import com.cardapio.review.application.usecase.SubmitReviewUseCase;
 import com.cardapio.shared.domain.Notification;
 import com.cardapio.shared.domain.Result;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
@@ -27,12 +30,13 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('CUSTOMER')")
-public class CustomerReviewController {
+public class CustomerReviewController implements CustomerReviewApi {
 
     private final SubmitReviewUseCase submitReview;
     private final GetMyReviewUseCase getMyReview;
     private final GetMyReviewableOrdersUseCase getMyReviewableOrders;
 
+    @Override
     @GetMapping("/api/v1/me/reviewable-orders")
     public List<ReviewableOrderResponse> reviewable(
         @AuthenticationPrincipal CardapioPrincipal me,
@@ -43,11 +47,12 @@ public class CustomerReviewController {
             .map(ReviewableOrderResponse::from).toList();
     }
 
+    @Override
     @PostMapping("/api/v1/orders/{id}/review")
     public ResponseEntity<ReviewResponse> submit(
         @AuthenticationPrincipal CardapioPrincipal me,
         @PathVariable UUID id,
-        @Valid @RequestBody SubmitReviewRequest body
+        SubmitReviewRequest body
     ) {
         var view = unwrap(submitReview.execute(new SubmitReviewCommand(
             OrderId.of(id), me.subject(), body.rating(), body.comment())));
@@ -56,6 +61,7 @@ public class CustomerReviewController {
             .body(ReviewResponse.from(view));
     }
 
+    @Override
     @GetMapping("/api/v1/orders/{id}/review")
     public ReviewResponse getMine(
         @AuthenticationPrincipal CardapioPrincipal me,

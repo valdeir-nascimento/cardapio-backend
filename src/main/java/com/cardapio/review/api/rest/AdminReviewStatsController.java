@@ -17,10 +17,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/reviews")
 @PreAuthorize("hasAnyRole('OWNER','MANAGER')")
-public class AdminReviewStatsController {
+public class AdminReviewStatsController implements AdminReviewStatsApi {
 
     private final ProductRatingStatsUseCase stats;
 
+    @Override
     @GetMapping("/stats")
     public List<ProductRatingStatsResponse> productStats(
         @RequestParam(required = false) UUID productId,
