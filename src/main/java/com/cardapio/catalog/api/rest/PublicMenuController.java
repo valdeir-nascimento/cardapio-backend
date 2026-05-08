@@ -15,15 +15,17 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/menu")
-public class PublicMenuController {
+public class PublicMenuController implements PublicMenuApi {
 
     private final CatalogFacade catalog;
 
+    @Override
     @GetMapping
     public MenuResponse menu() {
         return MenuResponse.from(catalog.getMenu());
     }
 
+    @Override
     @GetMapping("/products/{id}")
     public ProductDetailsResponse product(@PathVariable UUID id) {
         return ProductDetailsResponse.from(catalog.getProductDetails(ProductId.of(id)));

@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/operating-hours")
 @RequiredArgsConstructor
-public class PublicOperatingHoursController {
+public class PublicOperatingHoursController implements PublicOperatingHoursApi {
 
     private final CatalogFacade catalog;
 
+    @Override
     @GetMapping
     public OperatingHoursResponse get() {
         return OperatingHoursResponse.from(catalog.getOperatingHours());
