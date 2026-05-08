@@ -27,6 +27,7 @@
         <logstash-logback.version>8.0</logstash-logback.version>
         <bucket4j.version>8.10.1</bucket4j.version>
         <shedlock.version>5.16.0</shedlock.version>
+        <springdoc.version>2.7.0</springdoc.version>
     </properties>
 
     <dependencyManagement>
@@ -238,6 +239,11 @@
             <groupId>org.springframework.modulith</groupId>
             <artifactId>spring-modulith-docs</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
     </dependencies>
 
