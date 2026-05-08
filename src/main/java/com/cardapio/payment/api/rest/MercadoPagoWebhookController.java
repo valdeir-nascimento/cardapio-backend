@@ -4,7 +4,6 @@ import com.cardapio.payment.application.PaymentFacade;
 import com.cardapio.payment.application.command.HandleWebhookCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +21,7 @@ public class MercadoPagoWebhookController {
 
     private final PaymentFacade payments;
 
-    @PostMapping(value = "/mercado-pago", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/mercado-pago")
     public ResponseEntity<Void> mercadoPago(
         @RequestBody String rawBody,
         @RequestHeader Map<String, String> headers

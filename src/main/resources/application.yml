@@ -24,9 +24,9 @@ management:
 
 mercadopago:
   enabled: ${MP_ENABLED:false}
-  access-token: ${MP_ACCESS_TOKEN:TEST-DUMMY}
-  webhook-secret: ${MP_WEBHOOK_SECRET:test-webhook-secret}
-  notification-url: ${MP_NOTIFICATION_URL:http://localhost:8080/api/v1/webhooks/mercado-pago}
+  access-token: ${MP_ACCESS_TOKEN}
+  webhook-secret: ${MP_WEBHOOK_SECRET}
+  notification-url: ${MP_NOTIFICATION_URL:https://uncooked-scurvy-expanse.ngrok-free.dev/api/v1/webhooks/mercado-pago}
 
 resend:
   enabled: ${RESEND_ENABLED:false}
